@@ -1,0 +1,9 @@
+# AUR packages installed via yay.
+# One per line. Blank lines and # comments ignored.
+
+xwaylandvideobridge
+davinci-resolve
+protonvpn-gui
+zed
+ttf-jetbrains-mono-nerd
+github-desktop-bin
