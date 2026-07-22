@@ -63,8 +63,8 @@ If you install with `archinstall`, these settings produce a compatible base:
 
    `boot.sh` installs `git`, clones this repo to `~/.local/share/rat-linux`, then
    runs `install.sh`, which executes every `install/` module in numeric order.
-   Expect prompts for your sudo password and a long build (DaVinci Resolve and
-   other AUR packages compile from source).
+   Expect prompts for your sudo password and some AUR packages compiling from
+   source.
 
 5. **Reboot when it finishes:**
 

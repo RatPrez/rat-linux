@@ -42,6 +42,8 @@ audacity
 alacritty
 blender
 vlc
+proton-vpn-gtk-app
+qbittorrent
 
 # --- Fonts ---
 noto-fonts

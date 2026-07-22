@@ -3,8 +3,7 @@
 
 brave-bin
 xwaylandvideobridge
-davinci-resolve
-protonvpn-gui
 zed
 ttf-jetbrains-mono-nerd
 github-desktop-bin
+faugus-launcher
