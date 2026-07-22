@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Tiny bootstrap. This is the only thing you curl.
 #
-#   bash <(curl -fsSL https://raw.githubusercontent.com/RatPrez/rat-linux/main/boot.sh)
+#   bash <(curl -fsSL https://raw.githubusercontent.com/RatPrez/rat-linux/master/boot.sh)
 #
 # It installs git, clones the repo, then hands off to install.sh.
 set -euo pipefail
 
 RAT_REPO="${RAT_REPO:-https://github.com/RatPrez/rat-linux.git}"
-RAT_BRANCH="${RAT_BRANCH:-main}"
+RAT_BRANCH="${RAT_BRANCH:-master}"
 RAT_DIR="${RAT_DIR:-$HOME/.local/share/rat-linux}"
 
 if [[ ${EUID:-$(id -u)} -eq 0 ]]; then

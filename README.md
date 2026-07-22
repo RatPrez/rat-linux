@@ -58,7 +58,7 @@ If you install with `archinstall`, these settings produce a compatible base:
 4. **Run the bootstrap:**
 
    ```bash
-   bash <(curl -fsSL https://raw.githubusercontent.com/RatPrez/rat-linux/main/boot.sh)
+   bash <(curl -fsSL https://raw.githubusercontent.com/RatPrez/rat-linux/master/boot.sh)
    ```
 
    `boot.sh` installs `git`, clones this repo to `~/.local/share/rat-linux`, then

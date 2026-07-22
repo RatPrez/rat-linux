@@ -3,7 +3,7 @@
 
 # --- Repo location (used by boot.sh to clone) ---------------------------------
 : "${RAT_REPO:=https://github.com/RatPrez/rat-linux.git}"
-: "${RAT_BRANCH:=main}"
+: "${RAT_BRANCH:=master}"
 : "${RAT_DIR:=$HOME/.local/share/rat-linux}"
 
 # --- Logging ------------------------------------------------------------------
