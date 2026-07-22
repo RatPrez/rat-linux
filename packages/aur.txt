@@ -1,6 +1,7 @@
 # AUR packages installed via yay.
 # One per line. Blank lines and # comments ignored.
 
+brave-bin
 xwaylandvideobridge
 davinci-resolve
 protonvpn-gui

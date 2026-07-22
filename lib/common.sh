@@ -27,3 +27,33 @@ read_list() {
   [[ -f "$f" ]] || die "Package list not found: $f"
   sed -e 's/#.*//' -e '/^[[:space:]]*$/d' -e 's/[[:space:]]//g' "$f"
 }
+
+# --- Resilient package installs ----------------------------------------------
+# Packages are installed one at a time so a single failure (missing package,
+# broken AUR build, network hiccup) is reported and skipped instead of aborting
+# the whole run. Failures accumulate in RAT_FAILED_PKGS and are summarized by
+# install.sh at the end.
+RAT_FAILED_PKGS=()
+
+# Internal: run installer "$1 ..." for each remaining package, recording failures.
+_install_each() {
+  local label="$1"; shift
+  local installer=("$@")   # installer command WITHOUT the package name
+  local pkg
+  # The package list arrives on stdin (one per line) to keep quoting simple.
+  while IFS= read -r pkg; do
+    [[ -n "$pkg" ]] || continue
+    if "${installer[@]}" "$pkg"; then
+      ok "$label: $pkg"
+    else
+      warn "$label FAILED: $pkg  (skipping, continuing with the rest)"
+      RAT_FAILED_PKGS+=("$pkg")
+    fi
+  done
+}
+
+# Install official-repo packages via pacman, one at a time.
+pac_install() { _install_each "pacman" sudo pacman -S --needed --noconfirm; }
+
+# Install AUR packages via yay, one at a time.
+aur_install() { _install_each "aur" yay -S --needed --noconfirm; }

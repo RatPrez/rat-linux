@@ -30,5 +30,15 @@ for module in "${modules[@]}"; do
   source "$module"
 done
 
+if [[ ${#RAT_FAILED_PKGS[@]} -gt 0 ]]; then
+  warn "The following ${#RAT_FAILED_PKGS[@]} package(s) failed and were skipped:"
+  for p in "${RAT_FAILED_PKGS[@]}"; do
+    printf '     - %s\n' "$p" >&2
+  done
+  warn "Re-run after fixing them, or install manually.  Everything else is done."
+else
+  ok "No package failures."
+fi
+
 ok "All done."
 log "Reboot into the Plasma (Wayland) session when ready:  sudo reboot"

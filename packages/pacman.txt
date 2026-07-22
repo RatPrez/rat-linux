@@ -41,7 +41,6 @@ discord
 audacity
 alacritty
 blender
-brave-browser
 vlc
 
 # --- Fonts ---
