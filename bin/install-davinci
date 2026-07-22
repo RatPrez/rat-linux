@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# install-davinci — build + install DaVinci Resolve from the AUR.
+#
+# Since 19.1.3-2 the AUR package needs manual PKGBUILD edits (pkgver + the first
+# sha256sum) because Blackmagic gates the installer zip behind a login/form:
+#   https://wiki.archlinux.org/title/DaVinci_Resolve
+# This automates all of that — you only supply the zip you downloaded.
+#
+# Usage:
+#   install-davinci ~/Downloads/DaVinci_Resolve_20.0.1_Linux.zip
+#   install-davinci --studio ~/Downloads/DaVinci_Resolve_Studio_20.0.1_Linux.zip
+#   install-davinci --version 20.0.1 ~/Downloads/whatever.zip
+set -euo pipefail
+
+log()  { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
+die()  { printf '\033[1;31merr\033[0m %s\n' "$*" >&2; exit 1; }
+
+[[ ${EUID:-$(id -u)} -ne 0 ]] || die "Run as your normal user, not root."
+
+pkg="davinci-resolve"; version=""; zip=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --studio)  pkg="davinci-resolve-studio"; shift ;;
+    --version) version="${2:?--version needs a value}"; shift 2 ;;
+    -h|--help) grep '^#' "$0" | grep -v '^#!' | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -*)        die "Unknown flag: $1" ;;
+    *)         zip="$1"; shift ;;
+  esac
+done
+
+[[ -n "$zip" && -f "$zip" ]] || die "Give the path to the downloaded installer zip. See --help."
+command -v makepkg >/dev/null || die "makepkg not found — install base-devel first."
+
+if [[ -z "$version" ]]; then
+  version="$(basename "$zip" | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?[A-Za-z]?' | head -n1 || true)"
+  [[ -n "$version" ]] || die "Couldn't parse a version from '$zip'. Pass --version X.Y.Z."
+  log "Version parsed from filename: $version"
+fi
+
+log "Checksumming zip (large file, one moment)"
+sha="$(sha256sum "$zip" | awk '{print $1}')"
+
+work="$(mktemp -d)"; trap 'rm -rf "$work"' EXIT
+log "Cloning $pkg from the AUR"
+git clone "https://aur.archlinux.org/${pkg}.git" "$work/$pkg"
+cd "$work/$pkg"
+cp -v "$zip" ./
+[[ -f PKGBUILD ]] || die "PKGBUILD missing after clone."
+
+log "Patching PKGBUILD (pkgver=$version, first sha256sum -> your zip)"
+sed -i -E "s/^pkgver=.*/pkgver=${version}/" PKGBUILD
+awk -v new="$sha" '
+  /sha256sums/ { inblock=1 }
+  inblock && !done && match($0, /[0-9a-fA-F]{64}|SKIP/) {
+    $0 = substr($0,1,RSTART-1) new substr($0,RSTART+RLENGTH); done=1
+  }
+  { print }
+  inblock && /\)/ { inblock=0 }
+' PKGBUILD > PKGBUILD.new && mv PKGBUILD.new PKGBUILD
+
+log "Building + installing (compression off for speed)"
+PKGEXT='.pkg.tar' makepkg -i
+
+log "DaVinci Resolve ($pkg $version) installed."

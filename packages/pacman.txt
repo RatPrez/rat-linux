@@ -23,6 +23,10 @@ pipewire
 pipewire-pulse
 pipewire-alsa
 wireplumber
+sof-firmware        # Intel SOF codecs (most laptops) — no devices without this
+alsa-ucm-conf       # per-machine UCM profiles so devices actually surface
+alsa-firmware       # extra codec firmware blobs
+alsa-utils          # alsamixer / speaker-test / aplay for debugging
 
 # --- Networking / Bluetooth ---
 networkmanager
@@ -44,6 +48,10 @@ blender
 vlc
 proton-vpn-gtk-app
 qbittorrent
+zed                 # code editor (default for text/code)
+dolphin             # KDE file manager
+elisa               # KDE music player (default audio)
+kate                # advanced text editor — also provides the `kwrite` binary
 
 # --- Fonts ---
 noto-fonts

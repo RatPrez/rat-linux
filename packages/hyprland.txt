@@ -1,0 +1,9 @@
+# Bare-minimum Hyprland session (no dotfiles).
+# Just enough that Hyprland's stock auto-generated config is actually usable:
+# its default keybinds launch a terminal (kitty) and a launcher (wofi).
+
+hyprland                      # the compositor
+xdg-desktop-portal-hyprland   # screenshare / file pickers under Hyprland
+hyprpolkitagent               # polkit auth prompts (password dialogs)
+qt5-wayland                   # Qt apps render natively on Wayland
+qt6-wayland
