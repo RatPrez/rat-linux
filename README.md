@@ -101,6 +101,17 @@ Scripts in `bin/` are installed to `/usr/local/bin` (on PATH everywhere):
   checksum for you, since the AUR package no longer builds out of the box). Use
   `--studio` for Resolve Studio. `install-davinci --help` for details.
 
+- **`clean-boot`** — quiet the boot for a clean look: suppresses the scrolling
+  kernel/systemd text, while still auto-showing messages on an error or a slow/
+  hanging unit (`systemd.show_status=auto`) and leaving kernel errors visible
+  (`quiet`). No Plymouth/splash. **Limine only** — it edits the kernel command
+  line in limine's config after backing it up; re-runnable, and `clean-boot
+  --revert` restores the backup. The installer also offers this as an optional
+  `y/N` prompt near the end (module `11-clean-boot.sh`, default no, auto-skipped
+  on non-Limine systems; `RAT_CLEAN_BOOT=yes|no` skips the prompt). *Note: on
+  Nvidia the firmware/BGRT logo is usually cleared when the driver loads, so the
+  screen may just go blank until SDDM — that's expected without a splash.*
+
 Add your own by dropping an executable script in `bin/` and re-running the
 installer.
 
@@ -152,6 +163,7 @@ install/
   08-hyprland.sh     # OPTIONAL: prompts y/N for a bare Hyprland session
   09-user-scripts.sh # install bin/ commands to /usr/local/bin
   10-postinstall.sh  # KDE defaults + default apps
+  11-clean-boot.sh   # OPTIONAL: prompts y/N to quiet the boot (Limine only)
 ```
 
 ## Nvidia note
