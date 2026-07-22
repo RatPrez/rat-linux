@@ -12,6 +12,7 @@ opencl-nvidia
 # --- KDE Plasma (Wayland) ---
 plasma-meta
 sddm
+sddm-kcm            # System Settings module to theme/configure the SDDM login
 xorg-xwayland
 xdg-desktop-portal
 xdg-desktop-portal-kde

@@ -10,6 +10,17 @@ sudo systemctl enable --now bluetooth
 log "Enabling SDDM (display manager) on next boot"
 sudo systemctl enable sddm
 
+# Use the KDE "Breeze" SDDM theme so the login screen matches the Plasma lock
+# screen (both then use the Breeze look). The theme ships with plasma-workspace;
+# it just isn't selected by default. Fine-tune wallpaper/avatar later in
+# System Settings > Colors & Themes > Login Screen (SDDM).
+log "Theming SDDM login -> Breeze (matches the lock screen)"
+sudo install -d /etc/sddm.conf.d
+sudo tee /etc/sddm.conf.d/theme.conf >/dev/null <<'EOF'
+[Theme]
+Current=breeze
+EOF
+
 # PipeWire + WirePlumber run as *user* services (no sudo). Without these enabled,
 # no sound server runs and KDE shows "no audio devices". `enable` sets them up for
 # every future login; `--now` tries to start them immediately if a user session is

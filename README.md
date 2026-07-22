@@ -55,7 +55,8 @@ few KDE settings haven't taken effect yet.
 
 ## What you get
 
-**Desktop:** KDE Plasma (Wayland) with SDDM, XWayland, and KDE portals.
+**Desktop:** KDE Plasma (Wayland) with SDDM (themed with **Breeze** so the login
+screen matches the Plasma lock screen), XWayland, and KDE portals.
 **GPU:** proprietary Nvidia (`nvidia-dkms`) with DRM mode setting for Wayland.
 **Audio:** PipeWire + WirePlumber, with laptop firmware (`sof-firmware`, UCM).
 **Networking:** NetworkManager, Bluetooth.
