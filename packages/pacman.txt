@@ -53,6 +53,8 @@ zed                 # code editor (default for text/code)
 dolphin             # KDE file manager
 elisa               # KDE music player (default audio)
 kate                # advanced text editor — also provides the `kwrite` binary
+spectacle           # KDE screenshot tool
+libreoffice-fresh   # office suite
 
 # --- Fonts ---
 noto-fonts

@@ -6,4 +6,3 @@ xwaylandvideobridge
 ttf-jetbrains-mono-nerd
 github-desktop-bin
 faugus-launcher
-joplin-desktop

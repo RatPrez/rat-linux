@@ -69,8 +69,9 @@ screen matches the Plasma lock screen), XWayland, and KDE portals.
 | Web        | Brave |
 | Code / dev | Zed, GitHub Desktop, Kate/KWrite |
 | Media      | VLC, Elisa, Audacity, Blender |
+| Office      | LibreOffice |
 | Files      | Dolphin |
-| Notes      | Joplin |
+| Utilities  | Spectacle (screenshots) |
 | Chat       | Discord |
 | Torrent    | qBittorrent |
 | VPN        | Proton VPN |
@@ -85,7 +86,6 @@ screen matches the Plasma lock screen), XWayland, and KDE portals.
 - Australian regional format — DD/MM/YYYY dates (`en_AU` locale)
 - Login starts with an **empty session** (no window restore)
 - **Sleep & hibernate disabled** (systemd sleep targets masked)
-- Mouse **pointer acceleration off** (flat profile)
 - Default apps: **Brave** (web), **VLC** (video), **Elisa** (audio), **Zed** (code)
 
 Most of these are user config, so they land at your next login.
@@ -101,16 +101,8 @@ Scripts in `bin/` are installed to `/usr/local/bin` (on PATH everywhere):
   checksum for you, since the AUR package no longer builds out of the box). Use
   `--studio` for Resolve Studio. `install-davinci --help` for details.
 
-- **`clean-boot`** — quiet the boot for a clean look: suppresses the scrolling
-  kernel/systemd text, while still auto-showing messages on an error or a slow/
-  hanging unit (`systemd.show_status=auto`) and leaving kernel errors visible
-  (`quiet`). No Plymouth/splash. **Limine only** — it edits the kernel command
-  line in limine's config after backing it up; re-runnable, and `clean-boot
-  --revert` restores the backup. The installer also offers this as an optional
-  `y/N` prompt near the end (module `11-clean-boot.sh`, default no, auto-skipped
-  on non-Limine systems; `RAT_CLEAN_BOOT=yes|no` skips the prompt). *Note: on
-  Nvidia the firmware/BGRT logo is usually cleared when the driver loads, so the
-  screen may just go blank until SDDM — that's expected without a splash.*
+- **`install-joplin`** — build + install the Joplin desktop app from the AUR
+  (kept on-demand rather than in the default install).
 
 Add your own by dropping an executable script in `bin/` and re-running the
 installer.
@@ -163,7 +155,6 @@ install/
   08-hyprland.sh     # OPTIONAL: prompts y/N for a bare Hyprland session
   09-user-scripts.sh # install bin/ commands to /usr/local/bin
   10-postinstall.sh  # KDE defaults + default apps
-  11-clean-boot.sh   # OPTIONAL: prompts y/N to quiet the boot (Limine only)
 ```
 
 ## Nvidia note

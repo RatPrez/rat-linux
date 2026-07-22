@@ -31,6 +31,18 @@ done
 [[ -n "$zip" && -f "$zip" ]] || die "Give the path to the downloaded installer zip. See --help."
 command -v makepkg >/dev/null || die "makepkg not found — install base-devel first."
 
+# DaVinci Resolve's runtime dependencies. makepkg won't auto-pull them (we build
+# with makepkg, not `yay -S`), so install them up front. All in the official
+# repos; the virtuals resolve here to concrete packages:
+#   java-runtime -> jre-openjdk   tbb -> onetbb   opencl-driver -> opencl-nvidia
+DEPS=(
+  glu fuse2 qt5-x11extras qt5-svg qt5-quickcontrols2 qt5-multimedia
+  libxcrypt-compat xmlsec ffmpeg4.4 gst-plugins-bad-libs python-numpy
+  onetbb apr-util luajit libc++ libc++abi jre-openjdk
+)
+log "Installing DaVinci Resolve dependencies (incl. OpenJDK for java-runtime)"
+sudo pacman -S --needed --noconfirm "${DEPS[@]}"
+
 if [[ -z "$version" ]]; then
   version="$(basename "$zip" | grep -oE '[0-9]+\.[0-9]+(\.[0-9]+)?[A-Za-z]?' | head -n1 || true)"
   [[ -n "$version" ]] || die "Couldn't parse a version from '$zip'. Pass --version X.Y.Z."

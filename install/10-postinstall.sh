@@ -31,10 +31,6 @@ log "Animation speed -> snappy (0.25)"
 log "Login -> empty session"
 "$kw" --file ksmserverrc --group General --key loginMode emptySession
 
-# --- Pointer acceleration off (flat libinput profile) -------------------------
-log "Pointer acceleration -> off (flat)"
-"$kw" --file kcminputrc --group Mouse --key XLbInptAccelProfileFlat true
-
 # --- Australian regional formats (DD/MM/YYYY dates) ---------------------------
 log "Regional format -> en_AU (DD/MM/YYYY)"
 if ! locale -a 2>/dev/null | grep -qiE '^en_AU\.utf-?8$'; then
