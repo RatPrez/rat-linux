@@ -107,6 +107,9 @@ picker. Skip the prompt on unattended runs with `RAT_HYPRLAND=yes` or `=no`.
   One per line; `#` comments and blank lines ignored. Installs are resilient — a
   package that fails is reported and skipped, and the run continues, with a
   summary of failures at the end.
+- **Dotfiles:** drop files under `home/`, mirroring their real location in `$HOME`
+  (`home/.config/foo/bar` → `~/.config/foo/bar`). Module `09-dotfiles.sh` copies
+  them in, backing up any existing file to `<file>.rat.bak-<timestamp>` first.
 - **A new step:** drop `install/NN-name.sh`. It's sourced with `lib/common.sh`
   already loaded, so `log`/`ok`/`warn`/`die`, `$RAT_DIR`, `pac_install`,
   `aur_install`, and `read_list` are available.
@@ -135,7 +138,9 @@ install/
   06-dev-tools.sh    # nvm (Node) + rustup (Rust)
   07-services.sh     # NetworkManager, bluetooth, sddm, PipeWire user services
   08-hyprland.sh     # OPTIONAL: prompts y/N for a bare Hyprland session
+  09-dotfiles.sh     # copy home/ into $HOME (backs up anything it overwrites)
   10-postinstall.sh  # KDE defaults + default apps, font cache, keyring reset
+home/                # dotfiles mirroring $HOME (home/.config/... -> ~/.config/...)
 ```
 
 ## Nvidia note

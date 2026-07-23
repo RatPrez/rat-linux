@@ -1,0 +1,57 @@
+---
+Language: Cpp
+BasedOnStyle: LLVM
+Standard: Latest
+
+ColumnLimit: 120
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+PointerAlignment: Right
+ReferenceAlignment: Right
+AccessModifierOffset: -4
+
+# Functions, classes, structs, enums, namespaces open on a new line;
+# control statements (if/for/while/switch) keep the brace attached.
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: false
+  AfterClass: true
+  AfterControlStatement: Never
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+  BeforeLambdaBody: false
+  BeforeWhile: false
+  IndentBraces: false
+  SplitEmptyFunction: false
+  SplitEmptyRecord: true
+  SplitEmptyNamespace: false
+
+AllowShortFunctionsOnASingleLine: All
+AllowShortBlocksOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortEnumsOnASingleLine: true
+
+IndentCaseLabels: false
+NamespaceIndentation: All
+AllowShortNamespacesOnASingleLine: true
+ShortNamespaceLines: 1
+
+SortIncludes: CaseSensitive
+IncludeBlocks: Preserve
+
+AlignAfterOpenBracket: Align
+AlignTrailingComments: true
+SpaceBeforeParens: ControlStatements
+Cpp11BracedListStyle: true
+FixNamespaceComments: true
+...
