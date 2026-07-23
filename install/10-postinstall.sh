@@ -67,3 +67,32 @@ set_default org.kde.elisa.desktop audio/mpeg audio/flac audio/x-wav audio/mp4 au
 set_default dev.zed.Zed.desktop text/plain text/x-csrc text/x-chdr application/json text/markdown
 
 ok "KDE base settings applied. Log out/in (or reboot) for everything to take effect."
+
+# --- Font cache ---------------------------------------------------------------
+# Rebuild the fontconfig cache so the fonts installed above (Noto + Nerd) are
+# picked up without needing a reboot first.
+log "Rebuilding font cache (fc-cache -fv)"
+if command -v fc-cache >/dev/null 2>&1; then
+  fc-cache -fv >/dev/null 2>&1 || warn "fc-cache reported an error; fonts may need a reboot."
+  ok "Font cache rebuilt"
+else
+  warn "fc-cache not found; skipping font cache rebuild."
+fi
+
+# --- ProtonVPN / gnome-keyring reset ------------------------------------------
+# On a fresh install the gnome-keyring "login" keyring can be missing or stale,
+# which leaves ProtonVPN unable to store its session ("keyring is locked" /
+# credentials not saved). Clearing the keyring files forces gnome-keyring to
+# regenerate a fresh login keyring at the next login (PAM unlocks it with your
+# password). Safe here because a fresh install has no secrets worth keeping.
+keyring_dir="$HOME/.local/share/keyrings"
+if [[ -d "$keyring_dir" ]] && compgen -G "$keyring_dir/*.keyring" >/dev/null; then
+  log "Resetting gnome-keyring so ProtonVPN can regenerate it"
+  ts="$(date +%Y%m%d%H%M%S)"
+  mkdir -p "$keyring_dir/rat-backup-$ts"
+  mv "$keyring_dir"/*.keyring "$keyring_dir/rat-backup-$ts"/ 2>/dev/null || true
+  rm -f "$keyring_dir/default" 2>/dev/null || true
+  ok "Keyring reset (old files backed up to $keyring_dir/rat-backup-$ts); it regenerates at next login."
+else
+  log "No existing keyring found; gnome-keyring will generate one on first login."
+fi

@@ -54,12 +54,20 @@ dolphin             # KDE file manager
 elisa               # KDE music player (default audio)
 kate                # advanced text editor — also provides the `kwrite` binary
 spectacle           # KDE screenshot tool
+ark                 # KDE archive manager
 libreoffice-fresh   # office suite
-mypaint
+
+# --- Secrets ---
+# ProtonVPN (and other apps) store credentials via the Secret Service API.
+# gnome-keyring provides that backend; 10-postinstall resets a stale/locked
+# login keyring so ProtonVPN can save its session on a fresh install.
+gnome-keyring
 
 # --- Fonts ---
 noto-fonts
+noto-fonts-cjk
 noto-fonts-emoji
+noto-fonts-extra
 
 # --- Flatpak ---
 flatpak

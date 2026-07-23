@@ -92,23 +92,6 @@ Most of these are user config, so they land at your next login.
 
 ---
 
-## Commands
-
-Scripts in `bin/` are installed to `/usr/local/bin` (on PATH everywhere):
-
-- **`install-davinci <zip>`** — build + install DaVinci Resolve from the AUR from a
-  Blackmagic installer zip you downloaded (it patches the PKGBUILD's `pkgver` +
-  checksum for you, since the AUR package no longer builds out of the box). Use
-  `--studio` for Resolve Studio. `install-davinci --help` for details.
-
-- **`install-joplin`** — build + install the Joplin desktop app from the AUR
-  (kept on-demand rather than in the default install).
-
-Add your own by dropping an executable script in `bin/` and re-running the
-installer.
-
----
-
 ## Hyprland (optional)
 
 Module `08-hyprland.sh` asks `y/N` whether to add a **bare-minimum Hyprland**
@@ -138,7 +121,6 @@ picker. Skip the prompt on unattended runs with `RAT_HYPRLAND=yes` or `=no`.
 boot.sh              # the only thing you curl — clones repo, runs install.sh
 install.sh           # orchestrator: sources install/[0-9]*.sh in order
 lib/common.sh        # logging, config, read_list(), pac_install/aur_install
-bin/                 # commands installed to /usr/local/bin (e.g. install-davinci)
 packages/
   pacman.txt         # official-repo packages
   aur.txt            # AUR packages
@@ -153,8 +135,7 @@ install/
   06-dev-tools.sh    # nvm (Node) + rustup (Rust)
   07-services.sh     # NetworkManager, bluetooth, sddm, PipeWire user services
   08-hyprland.sh     # OPTIONAL: prompts y/N for a bare Hyprland session
-  09-user-scripts.sh # install bin/ commands to /usr/local/bin
-  10-postinstall.sh  # KDE defaults + default apps
+  10-postinstall.sh  # KDE defaults + default apps, font cache, keyring reset
 ```
 
 ## Nvidia note
