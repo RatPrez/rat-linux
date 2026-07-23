@@ -29,6 +29,10 @@ alsa-ucm-conf       # per-machine UCM profiles so devices actually surface
 alsa-firmware       # extra codec firmware blobs
 alsa-utils          # alsamixer / speaker-test / aplay for debugging
 
+# --- Clipboard ---
+wl-clipboard        # wl-copy / wl-paste for Wayland clipboard
+xclip               # clipboard access for XWayland/X11 apps
+
 # --- Networking / Bluetooth ---
 networkmanager
 bluez
