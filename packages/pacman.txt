@@ -10,6 +10,8 @@ ntfs-3g             # read/write NTFS
 exfatprogs          # mkfs/fsck for exFAT
 dosfstools          # mkfs/fsck for FAT/FAT32
 mtools              # access FAT filesystems without mounting (MS-DOS tools)
+udisks2             # disk mounting service (backs GNOME Disks + Dolphin's device pane)
+polkit              # auth backend udisks2 needs for user-triggered mount/format
 
 # --- KDE Plasma (Wayland) ---
 plasma-meta
