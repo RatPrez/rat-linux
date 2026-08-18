@@ -58,6 +58,19 @@ pac_install() { _install_each "pacman" sudo pacman -S --needed --noconfirm; }
 # Install AUR packages via yay, one at a time.
 aur_install() { _install_each "aur" yay -S --needed --noconfirm; }
 
+# --- Sudo credential keepalive -------------------------------------------
+# Prompts for the sudo password once, then refreshes sudo's timestamp cache
+# in the background every 60s so a long multi-step run (many pacman/yay
+# calls) never prompts again mid-run. Kills the background refresher on exit.
+sudo_keepalive() {
+  sudo -v
+  ( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
+  # Deliberately not `local` — the EXIT trap below reads it after this
+  # function has returned, so it needs to still be in scope at script exit.
+  sudo_keepalive_pid=$!
+  trap 'kill "$sudo_keepalive_pid" 2>/dev/null' EXIT
+}
+
 # --- GPU detection --------------------------------------------------------
 # Prints one line per detected GPU vendor ("nvidia" / "amd" / "intel"), based
 # on lspci's VGA/3D/display controllers. A hybrid laptop (e.g. Intel + Nvidia

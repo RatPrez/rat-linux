@@ -58,7 +58,7 @@ run_pending_patches() {
 
 cmd_update() {
   require_not_root
-  sudo -v
+  sudo_keepalive
 
   log "Pulling latest rat-linux ($RAT_DIR)"
   git -C "$RAT_DIR" pull --ff-only
@@ -120,7 +120,7 @@ cmd_nvidia() {
     return
   fi
 
-  sudo -v
+  sudo_keepalive
   install_nvidia_driver "$chosen"
   warn "Reboot required for the new driver to take effect: sudo reboot"
 }
