@@ -14,6 +14,15 @@ source "$RAT_DIR/lib/common.sh"
 
 require_not_root
 
+# Ask for the sudo password once up front, then keep the credential cache
+# alive in the background for the rest of the run so none of the ~10 modules
+# below prompt again (nothing is stored — this just refreshes sudo's own
+# timestamp cache periodically so it can't expire mid-run).
+sudo -v
+( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
+sudo_keepalive_pid=$!
+trap 'kill "$sudo_keepalive_pid" 2>/dev/null' EXIT
+
 filter="${1:-}"
 shopt -s nullglob
 modules=("$RAT_DIR"/install/[0-9]*.sh)
