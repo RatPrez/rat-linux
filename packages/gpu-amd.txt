@@ -1,0 +1,10 @@
+# AMD GPU stack: mesa RADV Vulkan driver + VA-API/VDPAU video acceleration.
+# Installed by install/05-gpu-drivers.sh when an AMD/ATI GPU is detected.
+mesa
+lib32-mesa
+vulkan-radeon
+lib32-vulkan-radeon
+libva-mesa-driver
+lib32-libva-mesa-driver
+mesa-vdpau
+lib32-mesa-vdpau

@@ -3,7 +3,7 @@
 #
 # Usage:
 #   ./install.sh                 # run all modules
-#   ./install.sh 05-nvidia       # run one module (substring match)
+#   ./install.sh 05-gpu          # run one module (substring match)
 #   RAT_SKIP="steam" ./install.sh  # (per-module env toggles, see modules)
 set -euo pipefail
 

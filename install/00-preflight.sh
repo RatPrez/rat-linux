@@ -5,6 +5,6 @@ log "Refreshing package databases"
 sudo pacman -Sy --noconfirm
 
 log "Installing base build tooling"
-sudo pacman -S --needed --noconfirm base-devel linux-headers git
+sudo pacman -S --needed --noconfirm base-devel linux-headers git pciutils
 
 ok "Preflight complete"

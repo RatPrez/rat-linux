@@ -4,6 +4,7 @@
 #   rat help           show this
 #   rat update          git pull, re-run install steps, apply pending
 #                        patches, then upgrade the system (pacman/yay/flatpak)
+#   rat nvidia          switch between open-source and proprietary Nvidia drivers
 #   rat patch-status    show which patch this machine is currently up to
 set -euo pipefail
 
@@ -11,6 +12,8 @@ RAT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
 export RAT_DIR
 # shellcheck source=lib/common.sh
 source "$RAT_DIR/lib/common.sh"
+# shellcheck source=lib/nvidia.sh
+source "$RAT_DIR/lib/nvidia.sh"
 
 state_dir="$HOME/.local/state/rat-linux"
 level_file="$state_dir/patch-level"
@@ -86,6 +89,42 @@ cmd_patch_status() {
   log "Current patch level: $(current_patch_level)"
 }
 
+cmd_nvidia() {
+  require_not_root
+
+  if ! detect_gpu_vendors | grep -qx nvidia; then
+    warn "No Nvidia GPU detected via lspci — continuing anyway since you asked."
+  fi
+
+  local current default answer chosen
+  current="$(current_nvidia_variant)"
+  default="${current:-open}"
+
+  if [[ -r /dev/tty ]]; then
+    printf 'Nvidia driver — [o]pen-source / [p]roprietary (current: %s) [%s]: ' \
+      "${current:-none}" "$default" > /dev/tty
+    read -r answer < /dev/tty || answer=""
+  else
+    die "rat nvidia needs a TTY to ask which driver to switch to. Set RAT_NVIDIA_DRIVER=open|proprietary and re-run non-interactively instead."
+  fi
+  answer="${answer:-$default}"
+
+  case "${answer,,}" in
+    p|proprietary) chosen="proprietary" ;;
+    o|open)        chosen="open" ;;
+    *) die "Unrecognized answer: $answer (expected o/open or p/proprietary)" ;;
+  esac
+
+  if [[ "$chosen" == "$current" ]]; then
+    ok "Already on $chosen — nothing to do."
+    return
+  fi
+
+  sudo -v
+  install_nvidia_driver "$chosen"
+  warn "Reboot required for the new driver to take effect: sudo reboot"
+}
+
 usage() {
   cat <<EOF
 rat — control script for this rat-linux checkout ($RAT_DIR)
@@ -95,6 +134,7 @@ Usage: rat <command>
 Commands:
   update          git pull, re-run install steps, apply pending patches,
                   then upgrade the system (pacman/yay/flatpak)
+  nvidia          switch between open-source and proprietary Nvidia drivers
   patch-status    show which patch this machine is currently up to
   help            show this help
 EOF
@@ -102,6 +142,7 @@ EOF
 
 case "${1:-help}" in
   update)       cmd_update ;;
+  nvidia)       cmd_nvidia ;;
   patch-status) cmd_patch_status ;;
   help|-h|--help) usage ;;
   *)

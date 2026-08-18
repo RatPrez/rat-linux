@@ -1,0 +1,7 @@
+# Intel GPU stack: mesa ANV Vulkan driver + VA-API media acceleration.
+# Installed by install/05-gpu-drivers.sh when an Intel GPU is detected.
+mesa
+lib32-mesa
+vulkan-intel
+lib32-vulkan-intel
+intel-media-driver

@@ -1,13 +1,9 @@
 # Official-repo packages installed via pacman.
 # One per line. Blank lines and # comments ignored.
 
-# --- Nvidia (open kernel modules) ---
-nvidia-open-dkms    # `nvidia-dkms` no longer exists; this provides it
-nvidia-utils
-lib32-nvidia-utils
-nvidia-settings
-egl-wayland
-opencl-nvidia
+# --- GPU drivers ---
+# Handled separately by install/05-gpu-drivers.sh based on detected hardware:
+# packages/gpu-{amd,intel}.txt and packages/gpu-nvidia-{open,proprietary}.txt.
 
 # --- KDE Plasma (Wayland) ---
 plasma-meta

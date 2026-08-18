@@ -57,3 +57,21 @@ pac_install() { _install_each "pacman" sudo pacman -S --needed --noconfirm; }
 
 # Install AUR packages via yay, one at a time.
 aur_install() { _install_each "aur" yay -S --needed --noconfirm; }
+
+# --- GPU detection --------------------------------------------------------
+# Prints one line per detected GPU vendor ("nvidia" / "amd" / "intel"), based
+# on lspci's VGA/3D/display controllers. A hybrid laptop (e.g. Intel + Nvidia
+# Optimus) prints more than one line — order is nvidia, amd, intel.
+#
+# Matched by numeric PCI vendor ID (10de/1002/8086), not vendor name text —
+# vendor name substrings like "ati" false-positive inside words such as
+# "Corporation" that show up in every vendor's lspci line.
+detect_gpu_vendors() {
+  command -v lspci >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm pciutils >/dev/null
+  local pci
+  pci="$(lspci -nn 2>/dev/null | grep -iE 'VGA compatible controller|3D controller|Display controller' || true)"
+  if grep -q '\[10de:' <<<"$pci"; then echo "nvidia"; fi
+  if grep -q '\[1002:' <<<"$pci"; then echo "amd"; fi
+  if grep -q '\[8086:' <<<"$pci"; then echo "intel"; fi
+  return 0
+}
