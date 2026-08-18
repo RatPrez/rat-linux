@@ -1,9 +1,22 @@
 # AUR packages installed via yay.
 # One per line. Blank lines and # comments ignored.
 
+# --- Browsers ---
 brave-bin
-xwaylandvideobridge
-ttf-jetbrains-mono-nerd
+
+# --- Dev / desktop ---
 github-desktop-bin
-faugus-launcher
-appimagelauncher
+xwaylandvideobridge   # lets XWayland apps (Discord etc.) see Wayland screenshares
+appimagelauncher      # integrates .AppImage files into the app menu
+
+# --- Gaming ---
+faugus-launcher       # Wine/Proton game launcher
+
+# --- Apps ---
+imageviewer           # lightweight image viewer
+vesktop               # Discord client with Vencord built in
+
+# --- Theming ---
+whitesur-cursor-theme-git   # cursor theme (see packages/pacman.txt / README for the
+                             # rest of the active theme: TokyoNight color scheme +
+                             # window decoration are bundled as dotfiles under home/)

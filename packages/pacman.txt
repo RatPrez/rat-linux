@@ -1,8 +1,8 @@
 # Official-repo packages installed via pacman.
 # One per line. Blank lines and # comments ignored.
 
-# --- Nvidia (proprietary) ---
-nvidia-dkms
+# --- Nvidia (open kernel modules) ---
+nvidia-open-dkms    # `nvidia-dkms` no longer exists; this provides it
 nvidia-utils
 lib32-nvidia-utils
 nvidia-settings
@@ -44,22 +44,55 @@ vulkan-icd-loader
 lib32-vulkan-icd-loader
 gamemode
 lib32-gamemode
+wine
+winetricks
 
 # --- Apps ---
 discord
-audacity
 alacritty
 blender
-vlc
+obs-studio
+mpv
 proton-vpn-gtk-app
 qbittorrent
+spotify-launcher
 zed                 # code editor (default for text/code)
 dolphin             # KDE file manager
 elisa               # KDE music player (default audio)
 kate                # advanced text editor — also provides the `kwrite` binary
+kcalc               # KDE calculator
 spectacle           # KDE screenshot tool
 ark                 # KDE archive manager
 libreoffice-fresh   # office suite
+gnome-disk-utility  # GNOME Disks — partition / mount / SMART GUI
+
+# --- CLI / system tools ---
+btop                # process + resource monitor
+fastfetch           # system info
+cpupower            # CPU governor control (cpupower.service, see README)
+nano
+xdotool
+wmctrl
+cpu-x               # GUI system/CPU info (neofetch-ish but graphical)
+webkit2gtk-4.1       # embedded web renderer some apps depend on
+
+# --- Codecs ---
+gst-libav           # GStreamer FFmpeg-backed codecs
+gst-plugins-bad
+gst-plugins-ugly
+
+# --- Dev toolchains ---
+dotnet-sdk
+dotnet-sdk-8.0
+bun
+mingw-w64-binutils   # Windows cross-compile toolchain
+mingw-w64-crt
+mingw-w64-gcc
+mingw-w64-headers
+mingw-w64-winpthreads
+python-pip
+python-pipx
+python-pyqt6
 
 # --- Secrets ---
 # ProtonVPN (and other apps) store credentials via the Secret Service API.
@@ -72,6 +105,7 @@ noto-fonts
 noto-fonts-cjk
 noto-fonts-emoji
 noto-fonts-extra
+ttf-jetbrains-mono-nerd   # terminal / editor font (now in [extra], not the AUR)
 
 # --- Flatpak ---
 flatpak
