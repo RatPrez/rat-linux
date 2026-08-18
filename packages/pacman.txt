@@ -5,6 +5,12 @@
 # Handled separately by install/05-gpu-drivers.sh based on detected hardware:
 # packages/gpu-{amd,intel}.txt and packages/gpu-nvidia-{open,proprietary}.txt.
 
+# --- Filesystems (Windows drive support) ---
+ntfs-3g             # read/write NTFS
+exfatprogs          # mkfs/fsck for exFAT
+dosfstools          # mkfs/fsck for FAT/FAT32
+mtools              # access FAT filesystems without mounting (MS-DOS tools)
+
 # --- KDE Plasma (Wayland) ---
 plasma-meta
 sddm
