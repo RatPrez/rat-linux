@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# rat — control script for a rat-linux checkout.
+#
+#   rat help           show this
+#   rat update          git pull, re-run install steps, apply pending
+#                        patches, then upgrade the system (pacman/yay/flatpak)
+#   rat patch-status    show which patch this machine is currently up to
+set -euo pipefail
+
+RAT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+export RAT_DIR
+# shellcheck source=lib/common.sh
+source "$RAT_DIR/lib/common.sh"
+
+state_dir="$HOME/.local/state/rat-linux"
+level_file="$state_dir/patch-level"
+
+current_patch_level() {
+  [[ -f "$level_file" ]] && cat "$level_file" || echo 0
+}
+
+# Run every patches/NNNN-*.sh newer than the tracked level, oldest first.
+# Stops at the first failure so nothing after a broken patch is applied.
+run_pending_patches() {
+  mkdir -p "$state_dir"
+  local current ran=0
+  current="$(current_patch_level)"
+
+  shopt -s nullglob
+  local patches=("$RAT_DIR"/patches/[0-9][0-9][0-9][0-9]-*.sh)
+  shopt -u nullglob
+
+  local p base num
+  for p in "${patches[@]}"; do
+    base="$(basename "$p")"
+    num=$((10#${base%%-*}))
+    (( num > current )) || continue
+
+    log "Applying patch $base"
+    if ( set -euo pipefail; source "$RAT_DIR/lib/common.sh"; source "$p" ); then
+      echo "$num" > "$level_file"
+      ok "Patch $base applied"
+      ran=$((ran + 1))
+    else
+      die "Patch $base failed — fix it and re-run 'rat update'. Nothing after it will run until it does."
+    fi
+  done
+
+  if [[ "$ran" -eq 0 ]]; then
+    ok "No pending patches"
+  else
+    ok "$ran patch(es) applied"
+  fi
+}
+
+cmd_update() {
+  require_not_root
+  sudo -v
+
+  log "Pulling latest rat-linux ($RAT_DIR)"
+  git -C "$RAT_DIR" pull --ff-only
+
+  log "Re-running install steps (packages, dotfiles, config)"
+  "$RAT_DIR/install.sh"
+
+  run_pending_patches
+
+  log "System update: pacman -Syu"
+  sudo pacman -Syu
+
+  if command -v yay >/dev/null 2>&1; then
+    log "System update: yay -Syu (AUR)"
+    yay -Syu
+  fi
+
+  if command -v flatpak >/dev/null 2>&1; then
+    log "System update: flatpak update"
+    flatpak update -y
+  fi
+
+  ok "rat update complete"
+}
+
+cmd_patch_status() {
+  mkdir -p "$state_dir"
+  log "Current patch level: $(current_patch_level)"
+}
+
+usage() {
+  cat <<EOF
+rat — control script for this rat-linux checkout ($RAT_DIR)
+
+Usage: rat <command>
+
+Commands:
+  update          git pull, re-run install steps, apply pending patches,
+                  then upgrade the system (pacman/yay/flatpak)
+  patch-status    show which patch this machine is currently up to
+  help            show this help
+EOF
+}
+
+case "${1:-help}" in
+  update)       cmd_update ;;
+  patch-status) cmd_patch_status ;;
+  help|-h|--help) usage ;;
+  *)
+    echo "Unknown command: ${1:-}" >&2
+    usage
+    exit 1
+    ;;
+esac
