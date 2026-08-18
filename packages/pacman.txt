@@ -44,7 +44,6 @@ wine
 winetricks
 
 # --- Apps ---
-discord
 alacritty
 blender
 obs-studio

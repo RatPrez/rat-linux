@@ -91,7 +91,7 @@ for Wayland). Hybrid (Intel+Nvidia) laptops get both stacks.
 | Office     | LibreOffice |
 | Files      | Dolphin |
 | Utilities  | Spectacle (screenshots), GNOME Disks, btop, fastfetch, AppImageLauncher |
-| Chat       | Discord |
+| Chat       | Vesktop (Discord client with Vencord built in) |
 | Torrent    | qBittorrent |
 | VPN        | Proton VPN |
 
