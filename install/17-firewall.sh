@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 # Host firewall: ufw, defaulting to deny-incoming / allow-outgoing.
 #
-# ufw is installed here rather than from packages/pacman.txt so that
-# patches/0003-enable-ufw.sh can source this module and set an existing
-# machine up in one go; `rat update` upgrades packages but never installs new
-# entries from the package lists.
-#
 # Inbound rules are opened only for the things this install actually uses:
 # KDE Connect (part of plasma-meta), Steam's in-home streaming if the gaming
 # category was selected, and SSH if an sshd is already running, so applying
