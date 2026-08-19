@@ -5,3 +5,4 @@
 heidisql              # Windows DB GUI (via Wine) — AUR
 heidisql-qt6          # native Qt6 port of HeidiSQL — AUR
 ghidra                # reverse-engineering / disassembler — official repo
+github-cli             # GitHub `gh` CLI — official repo
