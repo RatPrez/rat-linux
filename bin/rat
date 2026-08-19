@@ -2,8 +2,8 @@
 # rat — control script for a rat-linux checkout.
 #
 #   rat help           show this
-#   rat update          git pull, re-run install steps, apply pending
-#                        patches, then upgrade the system (pacman/yay/flatpak)
+#   rat update          git pull, upgrade the system (pacman/yay/flatpak),
+#                        then apply pending patches
 #   rat nvidia          switch between open-source and proprietary Nvidia drivers
 #   rat patch-status    show which patch this machine is currently up to
 set -euo pipefail
@@ -22,38 +22,61 @@ current_patch_level() {
   [[ -f "$level_file" ]] && cat "$level_file" || echo 0
 }
 
+# Prints a patch's "# CHANGELOG: ..." comment lines, one bullet per line.
+# Read with grep/sed, not by executing the patch — so this works before (and
+# without) actually running it.
+print_patch_changelog() {
+  local p="$1" line
+  while IFS= read -r line; do
+    printf '     - %s\n' "$line"
+  done < <(grep '^# CHANGELOG: ' "$p" | sed 's/^# CHANGELOG: //')
+}
+
 # Run every patches/NNNN-*.sh newer than the tracked level, oldest first.
 # Stops at the first failure so nothing after a broken patch is applied.
 run_pending_patches() {
   mkdir -p "$state_dir"
-  local current ran=0
+  local current
   current="$(current_patch_level)"
 
   shopt -s nullglob
-  local patches=("$RAT_DIR"/patches/[0-9][0-9][0-9][0-9]-*.sh)
+  local all_patches=("$RAT_DIR"/patches/[0-9][0-9][0-9][0-9]-*.sh)
   shopt -u nullglob
 
   local p base num
-  for p in "${patches[@]}"; do
+  local pending=()
+  for p in "${all_patches[@]}"; do
     base="$(basename "$p")"
     num=$((10#${base%%-*}))
-    (( num > current )) || continue
+    (( num > current )) && pending+=("$p")
+  done
 
-    log "Applying patch $base"
+  if [[ ${#pending[@]} -eq 0 ]]; then
+    ok "No pending patches"
+    return
+  fi
+
+  # Clear the scroll of package-upgrade output so the patch list (and what
+  # each one changes) is the first thing visible, not buried under it.
+  clear
+  log "Applying ${#pending[@]} pending patch(es)"
+
+  for p in "${pending[@]}"; do
+    base="$(basename "$p")"
+    num=$((10#${base%%-*}))
+
+    log "Patch $base"
+    print_patch_changelog "$p"
+
     if ( set -euo pipefail; source "$RAT_DIR/lib/common.sh"; source "$p" ); then
       echo "$num" > "$level_file"
       ok "Patch $base applied"
-      ran=$((ran + 1))
     else
       die "Patch $base failed — fix it and re-run 'rat update'. Nothing after it will run until it does."
     fi
   done
 
-  if [[ "$ran" -eq 0 ]]; then
-    ok "No pending patches"
-  else
-    ok "$ran patch(es) applied"
-  fi
+  ok "${#pending[@]} patch(es) applied"
 }
 
 cmd_update() {
@@ -62,11 +85,6 @@ cmd_update() {
 
   log "Pulling latest rat-linux ($RAT_DIR)"
   git -C "$RAT_DIR" pull --ff-only
-
-  log "Re-running install steps (packages, dotfiles, config)"
-  "$RAT_DIR/install.sh"
-
-  run_pending_patches
 
   log "System update: pacman -Syu"
   sudo pacman -Syu
@@ -80,6 +98,8 @@ cmd_update() {
     log "System update: flatpak update"
     flatpak update -y
   fi
+
+  run_pending_patches
 
   ok "rat update complete"
 }
@@ -132,8 +152,8 @@ rat — control script for this rat-linux checkout ($RAT_DIR)
 Usage: rat <command>
 
 Commands:
-  update          git pull, re-run install steps, apply pending patches,
-                  then upgrade the system (pacman/yay/flatpak)
+  update          git pull, upgrade the system (pacman/yay/flatpak),
+                  then apply pending patches
   nvidia          switch between open-source and proprietary Nvidia drivers
   patch-status    show which patch this machine is currently up to
   help            show this help

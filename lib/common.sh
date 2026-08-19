@@ -78,7 +78,11 @@ aur_install() { _install_each "aur" yay -S --needed --noconfirm; }
 # calls) never prompts again mid-run. Kills the background refresher on exit.
 sudo_keepalive() {
   sudo -v
-  ( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
+  # `set +e`: this subshell otherwise inherits errexit from the sourcing
+  # script, so a single transient `sudo -n true` failure would silently kill
+  # the refresher in the background — no error visible, just the timestamp
+  # quietly lapsing and sudo prompting again out of nowhere mid-run.
+  ( set +e; while true; do sudo -n true 2>/dev/null; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
   # Deliberately not `local` — the exit hook below reads it after this
   # function has returned, so it needs to still be in scope at script exit.
   sudo_keepalive_pid=$!

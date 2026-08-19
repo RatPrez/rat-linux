@@ -1,9 +1,11 @@
 # Patches
 
-One-off migration scripts for machines that already have rat-linux installed,
-for changes that a plain `git pull` + re-run of `install/*.sh` can't express
-(renaming a file, one-time cleanup, fixing something a past install left in a
-bad state, etc.).
+One-off migration scripts for machines that already have rat-linux installed.
+`rat update` only pulls the repo and upgrades packages — it does **not**
+re-run `install/*.sh` (that only happens on a fresh box) — so any change an
+already-installed machine needs to pick up (renaming a file, one-time
+cleanup, fixing something a past install left in a bad state, etc.) needs a
+patch here.
 
 ## Naming
 
@@ -22,6 +24,17 @@ A patch is a plain shell script, sourced with `lib/common.sh` already loaded
 (same as `install/*.sh`), so `log`/`ok`/`warn`/`die`, `$RAT_DIR`,
 `pac_install`, `aur_install`, and `read_list` are all available. Exit non-zero
 (or let `set -e` do it) on failure.
+
+Give it one or more `# CHANGELOG: ...` comment lines up top — `rat update`
+greps these straight out of the file (without running it) and prints them as
+a bullet list before applying the patch, so whoever's watching the update
+knows what's about to change:
+
+```sh
+#!/usr/bin/env bash
+# CHANGELOG: Disable the baloo file indexer — it was causing lag
+# CHANGELOG: Mask kde-baloo.service so it doesn't come back on next login
+```
 
 ## Tracking
 
