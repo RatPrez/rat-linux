@@ -12,6 +12,9 @@
 # shellcheck source=../lib/categories.sh
 source "$RAT_DIR/lib/categories.sh"
 
+# This module runs before 00-preflight, so on a freshly installed system the
+# sync databases can still be stale. Refresh before pulling gum in.
+sudo pacman -Sy --noconfirm >/dev/null 2>&1 || warn "Couldn't refresh package databases."
 pac_install <<<"gum"
 
 _cat_order=(dev-tools browsers gaming apps updater theme)
@@ -173,6 +176,9 @@ if have_tty && command -v gum >/dev/null 2>&1; then
       die "Aborted by user before installation started."
     fi
   fi
+elif ! command -v gum >/dev/null 2>&1; then
+  warn "gum is not installed, so the picker cannot run; using category defaults."
+  _apply_defaults
 else
   log "No TTY; using category defaults without prompting."
   _apply_defaults
