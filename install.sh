@@ -32,6 +32,7 @@ if [[ -n "$filter" ]]; then
     [[ "$(basename "$module" .sh)" == *"$filter"* ]] && filtered+=("$module")
   done
   modules=("${filtered[@]}")
+  [[ ${#modules[@]} -gt 0 ]] || die "No module matches '$filter'."
 fi
 
 # Every optional prompt happens here, before ui_init carves out its scroll
@@ -47,17 +48,6 @@ for i in "${!modules[@]}"; do
   fi
 done
 modules=("${modules[@]}")
-
-if [[ -z "$filter" && -r /dev/tty ]]; then
-  if [[ -z "${RAT_NVIDIA_DRIVER:-}" ]]; then
-    # shellcheck source=lib/nvidia.sh
-    source "$RAT_DIR/lib/nvidia.sh"
-    if [[ -z "$(current_nvidia_variant)" ]] && detect_gpu_vendors | grep -qx nvidia; then
-      RAT_NVIDIA_DRIVER="$(prompt_nvidia_variant)"
-      export RAT_NVIDIA_DRIVER
-    fi
-  fi
-fi
 
 ui_init "${#modules[@]}"
 

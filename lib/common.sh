@@ -13,6 +13,11 @@ ok()   { printf '%s ok%s %s\n'  "$_c_green"  "$_c_reset" "$*"; }
 warn() { printf '%s!!%s %s\n'   "$_c_yellow" "$_c_reset" "$*" >&2; }
 die()  { printf '%serr%s %s\n'  "$_c_red"    "$_c_reset" "$*" >&2; exit 1; }
 
+# True if a controlling terminal is actually usable. Testing -r /dev/tty is
+# not enough: the node can be readable while the process has no controlling
+# terminal, so the test passes and every later read and write fails.
+have_tty() { { : < /dev/tty; } 2>/dev/null; }
+
 require_not_root() {
   [[ ${EUID:-$(id -u)} -ne 0 ]] || die "Run as your normal user (it'll sudo when needed), not root."
 }
@@ -71,7 +76,10 @@ sudo_keepalive() {
   # `set +e`: this subshell otherwise inherits errexit from the sourcing
   # script, so one transient `sudo -n true` failure would silently kill the
   # refresher and sudo would start prompting again out of nowhere.
-  ( set +e; while true; do sudo -n true 2>/dev/null; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
+  # Output goes to /dev/null so the refresher never holds a consuming pipe
+  # open; otherwise `./install.sh | tee log` stalls if the script dies on a
+  # signal before the exit hook can kill it.
+  ( set +e; while true; do sudo -n true 2>/dev/null; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) >/dev/null 2>&1 &
   # Deliberately not `local`: the exit hook reads it after this returns.
   sudo_keepalive_pid=$!
   add_exit_trap 'kill "$sudo_keepalive_pid" 2>/dev/null'
