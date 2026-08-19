@@ -48,4 +48,4 @@ name = "LibreOffice"
 description = "MS Office-compatible suite"
 source = "pacman"
 package = "libreoffice-still"
-default = false
+default = true

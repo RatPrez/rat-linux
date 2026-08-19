@@ -53,6 +53,7 @@ kcalc               # KDE calculator
 spectacle           # KDE screenshot tool
 ark                 # KDE archive manager
 gnome-disk-utility  # GNOME Disks, a partition / mount / SMART GUI
+xviewer             # lightweight image viewer
 
 # --- CLI / system tools ---
 btop                # process + resource monitor

@@ -2,4 +2,3 @@
 # Anything user-optional lives in packages/categories/*.toml instead.
 
 appimagelauncher      # integrates .AppImage files into the app menu
-imageviewer           # lightweight image viewer
