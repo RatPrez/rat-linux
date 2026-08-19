@@ -37,7 +37,15 @@ default = false
 [[item]]
 id = "onlyoffice"
 name = "OnlyOffice"
-description = "MS Office-compatible suite, alongside LibreOffice"
+description = "MS Office-compatible suite"
 source = "aur"
 package = "onlyoffice-bin"
+default = false
+
+[[item]]
+id = "libreoffice"
+name = "LibreOffice"
+description = "MS Office-compatible suite"
+source = "pacman"
+package = "libreoffice-still"
 default = false

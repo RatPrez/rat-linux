@@ -53,7 +53,6 @@ kate                # advanced text editor; also provides the `kwrite` binary
 kcalc               # KDE calculator
 spectacle           # KDE screenshot tool
 ark                 # KDE archive manager
-libreoffice-fresh   # office suite
 gnome-disk-utility  # GNOME Disks, a partition / mount / SMART GUI
 
 # --- CLI / system tools ---
