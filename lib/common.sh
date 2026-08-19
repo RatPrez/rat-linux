@@ -66,7 +66,22 @@ _install_each() {
 }
 
 pac_install() { _install_each "pacman" sudo pacman -S --needed --noconfirm; }
-aur_install() { _install_each "aur" yay -S --needed --noconfirm; }
+
+# Without yay every AUR package would fail one by one with an unhelpful
+# message, so say it once and record them all instead.
+aur_install() {
+  if command -v yay >/dev/null 2>&1; then
+    _install_each "aur" yay -S --needed --noconfirm
+    return
+  fi
+  local pkg n=0
+  while IFS= read -r pkg; do
+    [[ -n "$pkg" ]] || continue
+    RAT_FAILED_PKGS+=("$pkg")
+    n=$((n + 1))
+  done
+  warn "yay is not installed; skipping $n AUR package(s). Install yay and re-run."
+}
 
 # Prompts for the sudo password once, then refreshes sudo's timestamp cache
 # in the background every 60s so a long run never prompts again mid-way.
