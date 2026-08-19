@@ -13,7 +13,7 @@ PS1='[\u@\h \W]\$ '
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-. "$HOME/.cargo/env"
+[ -f "$HOME/.cargo/env" ] && \. "$HOME/.cargo/env"
 export PATH="$HOME/.local/bin:$PATH"
 
 # Launch Zed editor (Arch names the CLI 'zeditor')
@@ -91,5 +91,6 @@ TODO="t"
 # Uncomment this to make Bash-it create alias reload.
 # BASH_IT_RELOAD_LEGACY=1
 
-# Load Bash It
-source "${BASH_IT?}/bash_it.sh"
+# Load Bash It (optional -- the "theme" category can skip installing it;
+# see install/12-bash-it.sh)
+[[ -f "$BASH_IT/bash_it.sh" ]] && source "$BASH_IT/bash_it.sh"

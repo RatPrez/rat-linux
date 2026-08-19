@@ -76,7 +76,7 @@ ui_progress() {
 
   # Fixed chrome around the bar+label is 10 cols: " [" "] " "100" "%" "  ".
   # Split what's left 60/40 between the bar and the label so long module
-  # names (e.g. "13-extra-dev-tools") aren't clipped by an oversized bar.
+  # names (e.g. "03-category-picker") aren't clipped by an oversized bar.
   local avail=$((cols - 10))
   local bar_width=$((avail * 3 / 5))
   (( bar_width < 10 )) && bar_width=10

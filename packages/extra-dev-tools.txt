@@ -1,8 +1,0 @@
-# Optional extra dev tools (module 13-extra-dev-tools.sh, prompted y/N).
-# Installed via yay, which transparently handles both official-repo and AUR
-# packages, so this list can mix either. One per line; comments/blanks ignored.
-
-heidisql              # Windows DB GUI (via Wine) — AUR
-heidisql-qt6          # native Qt6 port of HeidiSQL — AUR
-ghidra                # reverse-engineering / disassembler — official repo
-github-cli             # GitHub `gh` CLI — official repo

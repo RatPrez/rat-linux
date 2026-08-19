@@ -1,6 +1,14 @@
 #!/usr/bin/env bash
 # Base KDE Plasma settings + default apps. These write user config files, so most
 # take effect at the NEXT login (log out/in or reboot).
+#
+# This is the CORE look rat-linux always applies -- Breeze Dark, animation
+# speed, empty-session login, regional format, default apps, font cache,
+# keyring reset. The TokyoNight color scheme/decoration overlay, WhiteSur
+# cursors, and sleep/hibernate masking are category-optional (theme.toml)
+# and live in install/15-theme.sh instead, which runs right after this
+# module (it must run after Breeze Dark is applied here, since applying a
+# global look-and-feel resets the color scheme).
 
 # Plasma 6 uses kwriteconfig6; fall back to 5 just in case.
 if command -v kwriteconfig6 >/dev/null 2>&1; then
@@ -22,27 +30,6 @@ else
   "$kw" --file kdeglobals --group General --key ColorScheme BreezeDark
 fi
 
-# --- Theme (TokyoNight color scheme + decoration, WhiteSur cursors) -----------
-# Must run AFTER the Breeze Dark global theme above — applying a global theme
-# resets the color scheme, so setting it first would just get overwritten.
-log "Theme -> TokyoNight color scheme + decoration, WhiteSur cursors"
-if command -v plasma-apply-colorscheme >/dev/null 2>&1; then
-  plasma-apply-colorscheme TokyoNight >/dev/null 2>&1 \
-    || "$kw" --file kdeglobals --group General --key ColorScheme TokyoNight
-else
-  "$kw" --file kdeglobals --group General --key ColorScheme TokyoNight
-fi
-
-if command -v plasma-apply-cursortheme >/dev/null 2>&1; then
-  plasma-apply-cursortheme WhiteSur-cursors >/dev/null 2>&1 \
-    || "$kw" --file kcminputrc --group Mouse --key cursorTheme WhiteSur-cursors
-else
-  "$kw" --file kcminputrc --group Mouse --key cursorTheme WhiteSur-cursors
-fi
-
-"$kw" --file kwinrc --group org.kde.kdecoration2 --key library org.kde.kwin.aurorae.v2
-"$kw" --file kwinrc --group org.kde.kdecoration2 --key theme __aurorae__svg__TokyoNight
-
 # --- Animation speed (snappy, ~6/7 toward Instant) ----------------------------
 # kdeglobals [KDE] AnimationDurationFactor: 1.0 = default, 0 = instant.
 log "Animation speed -> snappy (0.25)"
@@ -63,11 +50,6 @@ if ! locale -a 2>/dev/null | grep -qiE '^en_AU\.utf-?8$'; then
   sudo locale-gen
 fi
 "$kw" --file plasma-localerc --group Formats --key LANG en_AU.UTF-8
-
-# --- Sleep / Hibernate off ----------------------------------------------------
-log "Sleep + hibernate -> off (masking systemd targets)"
-sudo systemctl mask sleep.target suspend.target hibernate.target hybrid-sleep.target >/dev/null 2>&1 \
-  || warn "Couldn't mask sleep targets."
 
 # --- Default applications -----------------------------------------------------
 log "Default apps -> brave / mpv / elisa / zed"

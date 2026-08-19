@@ -1,0 +1,35 @@
+# Theme category. "custom" items are applied by install/15-theme.sh directly
+# (KDE settings, systemd masking) rather than installed as packages; only
+# "whitesur-cursors" is an actual package (AUR) on top of its settings.
+#
+# Breeze Dark, animation speed, empty-session login, and regional format
+# stay core in install/14-postinstall.sh -- they're the base look rat-linux
+# always applies, not part of this category. See install/14-postinstall.sh
+# for why that split was made.
+
+[[item]]
+id = "tokyonight"
+name = "TokyoNight color scheme + window decoration"
+description = "Applied on top of the core Breeze Dark base"
+source = "custom"
+default = true
+
+[[item]]
+id = "whitesur-cursors"
+name = "WhiteSur cursor theme"
+source = "aur"
+package = "whitesur-cursor-theme-git"
+default = true
+
+[[item]]
+id = "bash-it"
+name = "bash-it framework (Tokyo Dark prompt theme)"
+source = "custom"
+default = true
+
+[[item]]
+id = "sleep-hibernate-disable"
+name = "Disable sleep & hibernate"
+description = "Masks the systemd sleep/suspend/hibernate targets"
+source = "custom"
+default = true

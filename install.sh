@@ -3,7 +3,7 @@
 #
 # Usage:
 #   ./install.sh                 # run all modules
-#   ./install.sh 05-gpu          # run one module (substring match)
+#   ./install.sh 06-gpu          # run one module (substring match)
 #   RAT_SKIP="steam" ./install.sh  # (per-module env toggles, see modules)
 set -euo pipefail
 
@@ -31,7 +31,7 @@ modules=("$RAT_DIR"/install/[0-9]*.sh)
 [[ ${#modules[@]} -gt 0 ]] || die "No modules found in $RAT_DIR/install/"
 
 # Filter down the module list up front so the progress bar's total matches
-# what will actually run (e.g. `./install.sh 05-gpu` is "1 of 1", not "1 of 12").
+# what will actually run (e.g. `./install.sh 06-gpu` is "1 of 1", not "1 of 16").
 if [[ -n "$filter" ]]; then
   filtered=()
   for module in "${modules[@]}"; do
@@ -44,21 +44,25 @@ fi
 # Ask every optional y/n or choice question here, before the full-screen UI
 # takes over the screen and before any module runs. Mid-run prompts would
 # either scroll by unseen in the log region or silently block the whole
-# install waiting on input nobody's watching for. Each answer is exported as
-# the same RAT_* env var the relevant module already reads (see
-# install/13-extra-dev-tools.sh and lib/nvidia.sh), so nothing downstream
-# prompts again — this only fires when running the full, unfiltered install.
-if [[ -z "$filter" && -r /dev/tty ]]; then
-  if [[ -z "${RAT_EXTRA_DEV_TOOLS:-}" ]]; then
-    printf 'Install extra dev tools (HeidiSQL, Ghidra)? [y/N] ' > /dev/tty
-    read -r RAT_EXTRA_DEV_TOOLS < /dev/tty || RAT_EXTRA_DEV_TOOLS=""
-    # Normalize empty (default-N) input to a non-empty "no" — the module's
-    # own RAT_EXTRA_DEV_TOOLS check treats "" as "not answered yet" and
-    # would otherwise prompt a second time.
-    [[ -n "$RAT_EXTRA_DEV_TOOLS" ]] || RAT_EXTRA_DEV_TOOLS="no"
-    export RAT_EXTRA_DEV_TOOLS
+# install waiting on input nobody's watching for. This only fires when
+# running the full, unfiltered install (or a filtered run that specifically
+# targets one of these modules).
+#
+# The category picker (gum, a full interactive TUI) especially cannot run
+# once ui_init has carved out its VT100 scroll region below — gum would be
+# fighting over the same terminal. So it's pulled out of the normal
+# install/[0-9]*.sh loop and sourced here instead; the loop below skips it.
+for i in "${!modules[@]}"; do
+  if [[ "$(basename "${modules[$i]}" .sh)" == "03-category-picker" ]]; then
+    log "Module: 03-category-picker"
+    # shellcheck source=/dev/null
+    source "${modules[$i]}"
+    unset 'modules[i]'
   fi
+done
+modules=("${modules[@]}")
 
+if [[ -z "$filter" && -r /dev/tty ]]; then
   if [[ -z "${RAT_NVIDIA_DRIVER:-}" ]]; then
     # shellcheck source=lib/nvidia.sh
     source "$RAT_DIR/lib/nvidia.sh"

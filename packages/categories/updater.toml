@@ -1,0 +1,29 @@
+# Updater category — the `rat` CLI itself and its optional behaviors.
+# "rat-cli" (source=script) is handled by install/16-rat-cli.sh, which
+# symlinks bin/rat onto PATH only if this item is selected. The "toggle"
+# items aren't installed at all — bin/rat reads them live from the state
+# file (see lib/categories.sh cat_is_selected) to decide whether `rat
+# update` also runs `flatpak update` and whether `rat nvidia` is available.
+#
+# Deselecting the whole category means bin/rat never gets symlinked, so the
+# user loses `rat update` and `rat nvidia` entirely -- install/03-category-
+# picker.sh warns about this explicitly before letting the category end up
+# empty.
+
+[[item]]
+id = "rat-cli"
+name = "rat CLI (rat update / rat nvidia / rat patch-status)"
+source = "script"
+default = true
+
+[[item]]
+id = "flatpak-update"
+name = "Include `flatpak update` in `rat update`"
+source = "toggle"
+default = true
+
+[[item]]
+id = "nvidia-helper"
+name = "`rat nvidia` driver-switch helper"
+source = "toggle"
+default = true

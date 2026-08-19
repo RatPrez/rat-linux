@@ -1,0 +1,30 @@
+# Browsers category. Multi-select — more than one can be installed.
+# See lib/categories.sh for the format.
+
+[[item]]
+id = "brave"
+name = "Brave"
+source = "aur"
+package = "brave-bin"
+default = true
+
+[[item]]
+id = "firefox"
+name = "Firefox"
+source = "pacman"
+package = "firefox"
+default = false
+
+[[item]]
+id = "chromium"
+name = "Chromium"
+source = "pacman"
+package = "chromium"
+default = false
+
+[[item]]
+id = "librewolf"
+name = "LibreWolf"
+source = "aur"
+package = "librewolf-bin"
+default = false

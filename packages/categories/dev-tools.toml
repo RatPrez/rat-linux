@@ -1,0 +1,55 @@
+# Dev tools category. "script" items are installed by hand-written functions
+# in install/08-dev-tools.sh (cat_script_nvm / cat_script_rustup), not by
+# pacman/aur/flatpak.
+
+[[item]]
+id = "zed"
+name = "Zed"
+description = "Code editor (default for text/code)"
+source = "pacman"
+package = "zed"
+default = true
+
+[[item]]
+id = "github-desktop"
+name = "GitHub Desktop"
+source = "aur"
+package = "github-desktop-bin"
+default = true
+
+[[item]]
+id = "nvm"
+name = "nvm + Node LTS"
+description = "Node via nvm, deliberately outside pacman"
+source = "script"
+default = true
+
+[[item]]
+id = "rustup"
+name = "rustup (Rust stable)"
+description = "Rust via rustup, deliberately outside pacman"
+source = "script"
+default = true
+
+[[item]]
+id = "github-cli"
+name = "GitHub CLI (gh)"
+source = "pacman"
+package = "github-cli"
+default = false
+
+[[item]]
+id = "ghidra"
+name = "Ghidra"
+description = "Reverse-engineering / disassembler"
+source = "pacman"
+package = "ghidra"
+default = false
+
+[[item]]
+id = "heidisql"
+name = "HeidiSQL (+ Qt6 port)"
+description = "Windows DB GUI (via Wine), plus the native Qt6 port"
+source = "aur"
+package = "heidisql heidisql-qt6"
+default = false

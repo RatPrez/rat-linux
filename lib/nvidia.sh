@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Nvidia driver install/switch helpers. Shared by install/05-gpu-drivers.sh
+# Nvidia driver install/switch helpers. Shared by install/06-gpu-drivers.sh
 # (first install) and `rat nvidia` (switching later). Sourced with
 # lib/common.sh already loaded, so log/ok/warn/die, $RAT_DIR, pac_install,
 # and read_list are available.

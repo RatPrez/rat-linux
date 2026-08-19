@@ -16,6 +16,8 @@ source "$RAT_DIR/lib/common.sh"
 source "$RAT_DIR/lib/nvidia.sh"
 # shellcheck source=lib/patches.sh
 source "$RAT_DIR/lib/patches.sh"
+# shellcheck source=lib/categories.sh
+source "$RAT_DIR/lib/categories.sh"
 
 cmd_update() {
   require_not_root
@@ -33,8 +35,12 @@ cmd_update() {
   fi
 
   if command -v flatpak >/dev/null 2>&1; then
-    log "System update: flatpak update"
-    flatpak update -y
+    if cat_is_selected "updater" "flatpak-update" "$CATEGORIES_DIR/updater.toml"; then
+      log "System update: flatpak update"
+      flatpak update -y
+    else
+      log "Flatpak updates disabled (Updater category); skipping."
+    fi
   fi
 
   run_pending_patches
@@ -49,6 +55,10 @@ cmd_patch_status() {
 
 cmd_nvidia() {
   require_not_root
+
+  if ! cat_is_selected "updater" "nvidia-helper" "$CATEGORIES_DIR/updater.toml"; then
+    die "The Nvidia driver-switch helper was deselected during install (Updater category). Re-run the category picker (./install.sh 03-category-picker) to enable it."
+  fi
 
   if ! detect_gpu_vendors | grep -qx nvidia; then
     warn "No Nvidia GPU detected via lspci — continuing anyway since you asked."
