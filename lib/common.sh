@@ -54,9 +54,15 @@ _install_each() {
   local label="$1"; shift
   local installer=("$@")
   local pkg
+  # The package list arrives on stdin, so the installer must not inherit it.
+  # Anything that reads stdin (a password prompt, a yay menu) would otherwise
+  # swallow the next package name: it never gets installed and never gets
+  # reported. Point the child at the terminal instead.
+  local child_stdin=/dev/null
+  have_tty && child_stdin=/dev/tty
   while IFS= read -r pkg; do
     [[ -n "$pkg" ]] || continue
-    if "${installer[@]}" "$pkg"; then
+    if "${installer[@]}" "$pkg" < "$child_stdin"; then
       ok "$label: $pkg"
     else
       warn "$label FAILED: $pkg  (skipping, continuing with the rest)"
@@ -71,7 +77,11 @@ pac_install() { _install_each "pacman" sudo pacman -S --needed --noconfirm; }
 # message, so say it once and record them all instead.
 aur_install() {
   if command -v yay >/dev/null 2>&1; then
-    _install_each "aur" yay -S --needed --noconfirm
+    # --sudoloop: yay refreshes its own sudo timestamp while a build runs.
+    # Our keepalive does not reliably cover it, because yay invokes sudo from
+    # child processes that may not share this shell's controlling terminal,
+    # and sudo keys its timestamp by terminal.
+    _install_each "aur" yay -S --needed --noconfirm --sudoloop
     return
   fi
   local pkg n=0
