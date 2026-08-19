@@ -11,6 +11,8 @@ RAT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export RAT_DIR
 # shellcheck source=lib/common.sh
 source "$RAT_DIR/lib/common.sh"
+# shellcheck source=lib/ui.sh
+source "$RAT_DIR/lib/ui.sh"
 
 require_not_root
 
@@ -26,14 +28,55 @@ modules=("$RAT_DIR"/install/[0-9]*.sh)
 
 [[ ${#modules[@]} -gt 0 ]] || die "No modules found in $RAT_DIR/install/"
 
+# Filter down the module list up front so the progress bar's total matches
+# what will actually run (e.g. `./install.sh 05-gpu` is "1 of 1", not "1 of 12").
+if [[ -n "$filter" ]]; then
+  filtered=()
+  for module in "${modules[@]}"; do
+    [[ "$(basename "$module" .sh)" == *"$filter"* ]] && filtered+=("$module")
+  done
+  modules=("${filtered[@]}")
+fi
+
+# --- Upfront prompts -----------------------------------------------------
+# Ask every optional y/n or choice question here, before the full-screen UI
+# takes over the screen and before any module runs. Mid-run prompts would
+# either scroll by unseen in the log region or silently block the whole
+# install waiting on input nobody's watching for. Each answer is exported as
+# the same RAT_* env var the relevant module already reads (see
+# install/13-extra-dev-tools.sh and lib/nvidia.sh), so nothing downstream
+# prompts again — this only fires when running the full, unfiltered install.
+if [[ -z "$filter" && -r /dev/tty ]]; then
+  if [[ -z "${RAT_EXTRA_DEV_TOOLS:-}" ]]; then
+    printf 'Install extra dev tools (HeidiSQL, Ghidra)? [y/N] ' > /dev/tty
+    read -r RAT_EXTRA_DEV_TOOLS < /dev/tty || RAT_EXTRA_DEV_TOOLS=""
+    # Normalize empty (default-N) input to a non-empty "no" — the module's
+    # own RAT_EXTRA_DEV_TOOLS check treats "" as "not answered yet" and
+    # would otherwise prompt a second time.
+    [[ -n "$RAT_EXTRA_DEV_TOOLS" ]] || RAT_EXTRA_DEV_TOOLS="no"
+    export RAT_EXTRA_DEV_TOOLS
+  fi
+
+  if [[ -z "${RAT_NVIDIA_DRIVER:-}" ]]; then
+    # shellcheck source=lib/nvidia.sh
+    source "$RAT_DIR/lib/nvidia.sh"
+    if [[ -z "$(current_nvidia_variant)" ]] && detect_gpu_vendors | grep -qx nvidia; then
+      RAT_NVIDIA_DRIVER="$(prompt_nvidia_variant)"
+      export RAT_NVIDIA_DRIVER
+    fi
+  fi
+fi
+
+ui_init "${#modules[@]}"
+
+step=0
 for module in "${modules[@]}"; do
   name="$(basename "$module" .sh)"
-  if [[ -n "$filter" && "$name" != *"$filter"* ]]; then
-    continue
-  fi
   log "Module: $name"
   # shellcheck source=/dev/null
   source "$module"
+  step=$((step + 1))
+  ui_progress "$step" "$name"
 done
 
 if [[ ${#RAT_FAILED_PKGS[@]} -gt 0 ]]; then

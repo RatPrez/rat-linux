@@ -20,6 +20,20 @@ require_not_root() {
   [[ ${EUID:-$(id -u)} -ne 0 ]] || die "Run as your normal user (it'll sudo when needed), not root."
 }
 
+# --- Exit trap registry --------------------------------------------------
+# `trap ... EXIT` overwrites any previously-set EXIT trap, which breaks once
+# more than one thing (sudo_keepalive, ui_cleanup, ...) needs to clean up on
+# exit. add_exit_trap lets each of them register independently.
+_rat_exit_hooks=()
+add_exit_trap() {
+  _rat_exit_hooks+=("$1")
+  trap '_rat_run_exit_hooks' EXIT
+}
+_rat_run_exit_hooks() {
+  local h
+  for h in "${_rat_exit_hooks[@]}"; do eval "$h"; done
+}
+
 # Read a package list file: strips comments (#...) and blank lines.
 # Usage: mapfile -t pkgs < <(read_list packages/pacman.txt)
 read_list() {
@@ -65,10 +79,10 @@ aur_install() { _install_each "aur" yay -S --needed --noconfirm; }
 sudo_keepalive() {
   sudo -v
   ( while true; do sudo -n true; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
-  # Deliberately not `local` — the EXIT trap below reads it after this
+  # Deliberately not `local` — the exit hook below reads it after this
   # function has returned, so it needs to still be in scope at script exit.
   sudo_keepalive_pid=$!
-  trap 'kill "$sudo_keepalive_pid" 2>/dev/null' EXIT
+  add_exit_trap 'kill "$sudo_keepalive_pid" 2>/dev/null'
 }
 
 # --- GPU detection --------------------------------------------------------
