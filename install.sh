@@ -13,6 +13,8 @@ export RAT_DIR
 source "$RAT_DIR/lib/common.sh"
 # shellcheck source=lib/ui.sh
 source "$RAT_DIR/lib/ui.sh"
+# shellcheck source=lib/patches.sh
+source "$RAT_DIR/lib/patches.sh"
 
 require_not_root
 
@@ -78,6 +80,16 @@ for module in "${modules[@]}"; do
   step=$((step + 1))
   ui_progress "$step" "$name"
 done
+
+# Restore the plain terminal before anything below prints — run_pending_patches
+# does its own `clear`, which would otherwise fight the scroll region above.
+ui_cleanup
+
+# A fresh, unfiltered install runs every patch that exists, same as if
+# `rat update` had been run right after — nothing seeds the tracker to "skip
+# these", since a patch may be a real system change (not just a migration for
+# pre-existing state) and fresh boxes need it too. See patches/README.md.
+[[ -z "$filter" ]] && run_pending_patches
 
 if [[ ${#RAT_FAILED_PKGS[@]} -gt 0 ]]; then
   warn "The following ${#RAT_FAILED_PKGS[@]} package(s) failed and were skipped:"

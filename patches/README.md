@@ -1,11 +1,15 @@
 # Patches
 
-One-off migration scripts for machines that already have rat-linux installed.
-`rat update` only pulls the repo and upgrades packages — it does **not**
-re-run `install/*.sh` (that only happens on a fresh box) — so any change an
-already-installed machine needs to pick up (renaming a file, one-time
-cleanup, fixing something a past install left in a bad state, etc.) needs a
-patch here.
+One-off scripts for changes that don't belong in `install/*.sh` as an
+ongoing step — system tweaks, one-time cleanup, migrations for state a past
+install left behind, etc. `rat update` only pulls the repo and upgrades
+packages — it does **not** re-run `install/*.sh` — so a patch is the only
+way an already-installed machine picks up a change like this.
+
+A **fresh** install runs every patch that exists too (at the end of
+`install.sh`, same mechanism as `rat update`), so patches apply equally
+whether the box is brand new or has been running for a year — don't assume
+"fresh install" means a patch can be skipped.
 
 ## Naming
 
@@ -40,7 +44,6 @@ knows what's about to change:
 
 The current patch level is stored per-machine at
 `~/.local/state/rat-linux/patch-level` — NOT in the repo, since different
-machines may be at different levels. A **fresh** install seeds this to the
-highest patch number already in this directory at install time (module
-`install/12-rat-cli.sh`), since a fresh checkout already reflects that state
-and shouldn't replay history. Check a machine's level with `rat patch-status`.
+machines may be at different levels. It starts at 0 (unset), so on a brand
+new machine every patch in this directory runs once, in order, before the
+install is considered done. Check a machine's level with `rat patch-status`.
