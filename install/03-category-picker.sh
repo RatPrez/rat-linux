@@ -28,7 +28,7 @@ declare -A _cat_desc=(
   [browsers]="Pick one or more."
   [gaming]="Steam, Vulkan, GameMode, and friends."
   [apps]="Optional VPN clients and office suite. All default off."
-  [updater]="The rat CLI itself and what rat update/rat nvidia do."
+  [updater]="The rat CLI itself and what rat update does."
   [theme]="TokyoNight overlay, WhiteSur cursors, bash-it, sleep/hibernate."
 )
 declare -A _cat_file=(
@@ -120,7 +120,7 @@ _run_custom_category() {
         any=0
         for id in "${ids[@]}"; do [[ "${state[$id]}" == "1" ]] && any=1; done
         if [[ "$any" -eq 0 ]] \
-          && ! gum confirm "You won't have 'rat update' or 'rat nvidia'. Continue with Updater empty?" < /dev/tty > /dev/tty; then
+          && ! gum confirm "You won't have the rat CLI at all. Continue with Updater empty?" < /dev/tty > /dev/tty; then
           continue
         fi
       fi
@@ -155,7 +155,7 @@ _final_summary() {
     "Selected for install:" "" "${lines[@]}" > /dev/tty
 }
 
-if [[ -r /dev/tty ]] && command -v gum >/dev/null 2>&1; then
+if have_tty && command -v gum >/dev/null 2>&1; then
   # Pre-seed from any existing state so a re-run doesn't just replay defaults.
   cat_state_load
 

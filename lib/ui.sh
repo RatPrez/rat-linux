@@ -119,10 +119,7 @@ ui_intro() {
   # falls back to a plain read. Cancel is the default in both paths, and
   # cancelling here has changed nothing: no module has run and sudo has not
   # even been asked for yet.
-  # Actually open /dev/tty rather than testing -r on it: the node can be
-  # readable while the process has no controlling terminal, in which case the
-  # test passes but every read and write below fails.
-  if ! { : < /dev/tty; } 2>/dev/null; then
+  if ! have_tty; then
     warn "No usable TTY to confirm on; continuing non-interactively."
     return 0
   fi

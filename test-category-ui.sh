@@ -16,7 +16,7 @@ export RAT_DIR
 source "$RAT_DIR/lib/common.sh"
 
 command -v gum >/dev/null 2>&1 || die "gum isn't installed. Install it first: sudo pacman -S gum"
-[[ -r /dev/tty ]] || die "Needs an interactive terminal (a TTY) to test the picker."
+have_tty || die "Needs an interactive terminal (a TTY) to test the picker."
 
 # Isolated $HOME, removed however this script exits.
 test_home="$(mktemp -d)"
