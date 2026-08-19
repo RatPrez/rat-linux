@@ -2,7 +2,7 @@
 
 Personal, omarchy-style Arch post-install: **Wayland + KDE Plasma**, automatic
 GPU driver detection (AMD/Intel/Nvidia), my apps, dev toolchains, and sane KDE
-defaults — from one curl command on a fresh Arch base.
+defaults, from one curl command on a fresh Arch base.
 
 It runs *on top of* a booted, logged-in Arch system. It does **not** install Arch
 itself, the bootloader, or the kernel.
@@ -15,13 +15,13 @@ itself, the bootloader, or the kernel.
 
 Boot the Arch ISO (**UEFI mode**), run `archinstall`, and select:
 
-- **Profile:** `Minimal` — *not* a desktop profile (rat-linux installs Plasma + SDDM).
+- **Profile:** `Minimal`, *not* a desktop profile (rat-linux installs Plasma + SDDM).
 - **Kernels:** `linux` (leave default).
 - **Additional packages:** `linux-headers` *(needed if you have an Nvidia GPU,
   for its DKMS driver; if you pick `linux-lts`, add `linux-lts-headers`
   instead)*.
-- **Bootloader:** any of `systemd-boot` / `GRUB` / `Limine` (all fine — rat-linux
-  never touches it).
+- **Bootloader:** any of `systemd-boot` / `GRUB` / `Limine` (all fine, since
+  rat-linux never touches it).
 - **Network:** `NetworkManager` (or plan to be on **ethernet** at first boot).
 - **User account:** create your user and grant it **superuser (sudo)** rights.
 
@@ -40,7 +40,7 @@ This clones the repo to `~/.local/share/rat-linux` and runs the installer. Expec
 sudo prompts and some AUR packages compiling from source. Early on it asks
 **Quick install** (accept every category's defaults, no further input) or
 **Custom install** (walk Dev tools → Browsers → Gaming → Updater → Theme,
-one `gum` picker per category, defaults pre-selected — see
+one `gum` picker per category, defaults pre-selected; see
 [Categories](#categories) below). If it detects an Nvidia GPU it separately
 asks once whether to use the open-source or proprietary kernel modules
 (default: open-source).
@@ -77,7 +77,7 @@ then upgrades the system (`pacman -Syu`, `yay -Syu`, `flatpak update`).
 
 **Desktop:** KDE Plasma (Wayland) with SDDM (themed with **Breeze** so the login
 screen matches the Plasma lock screen), XWayland, and KDE portals.
-**GPU:** auto-detected driver stack — AMD (mesa RADV), Intel (mesa ANV), or
+**GPU:** auto-detected driver stack: AMD (mesa RADV), Intel (mesa ANV), or
 Nvidia (open or proprietary DKMS modules, your choice, with DRM mode setting
 for Wayland). Hybrid (Intel+Nvidia) laptops get both stacks.
 **Audio:** PipeWire + WirePlumber, with laptop firmware (`sof-firmware`, UCM).
@@ -85,7 +85,7 @@ for Wayland). Hybrid (Intel+Nvidia) laptops get both stacks.
 
 These, plus base apps (Alacritty, Dolphin, LibreOffice, Spectacle, qBittorrent,
 Proton VPN, Vesktop, ...) and the base **Breeze Dark** KDE look, install
-unconditionally — see [Categories](#categories) below for everything that's
+unconditionally; see [Categories](#categories) below for everything that's
 optional (browsers, gaming, dev tools, the `rat` CLI, and the TokyoNight/
 WhiteSur/bash-it theme layer).
 
@@ -93,7 +93,7 @@ WhiteSur/bash-it theme layer).
 
 - Dark theme (**Breeze Dark**)
 - Snappy animations (`AnimationDurationFactor = 0.25`)
-- Australian regional format — DD/MM/YYYY dates (`en_AU` locale)
+- Australian regional format, DD/MM/YYYY dates (`en_AU` locale)
 - Login starts with an **empty session** (no window restore)
 - Default apps set for whichever of Brave / MPV / Elisa / Zed you selected
 
@@ -113,7 +113,7 @@ enter). The five categories, each in `packages/categories/<name>.toml`:
 | Dev tools | Zed, GitHub Desktop, nvm/rustup, HeidiSQL, Ghidra, `gh` | HeidiSQL/Ghidra/`gh` default off |
 | Browsers | Brave, Firefox, Chromium, LibreWolf | multi-select |
 | Gaming | Steam, Vulkan, GameMode, Wine, Faugus Launcher | |
-| Updater | the `rat` CLI itself; whether `rat update` also runs `flatpak update`; whether `rat nvidia` is available | can be entirely deselected — you're warned first |
+| Updater | the `rat` CLI itself; whether `rat update` also runs `flatpak update`; whether `rat nvidia` is available | can be entirely deselected, and you're warned first |
 | Theme | TokyoNight color scheme + decoration, WhiteSur cursors, bash-it (Tokyo Dark prompt), sleep/hibernate disable | layered on top of the core Breeze Dark base |
 
 Selections are saved to `~/.local/state/rat-linux/selected-categories.json`
@@ -143,15 +143,15 @@ installed.
 - **Packages:** edit `packages/pacman.txt` (official), `packages/aur.txt` (AUR),
   or `packages/flatpak.txt` (Flatpak) for anything that should install
   unconditionally. One per line; `#` comments and blank lines ignored.
-  Installs are resilient — a package that fails is reported and skipped, and
+  Installs are resilient: a package that fails is reported and skipped, and
   the run continues, with a summary of failures at the end. GPU packages live
   separately in `packages/gpu-{amd,intel}.txt` and
-  `packages/gpu-nvidia-{open,proprietary}.txt` — see the GPU section below.
+  `packages/gpu-nvidia-{open,proprietary}.txt`; see the GPU section below.
   Anything that should be user-optional belongs in
-  `packages/categories/*.toml` instead — see [Categories](#categories).
+  `packages/categories/*.toml` instead; see [Categories](#categories).
 - **Dotfiles:** drop files under `home/`, mirroring their real location in `$HOME`
   (`home/.config/foo/bar` → `~/.config/foo/bar`). Module `13-dotfiles.sh`
-  **symlinks** them into place — config is always read live from `$RAT_DIR`, so
+  **symlinks** them into place, so config is always read live from `$RAT_DIR` and
   editing a file here (or `rat update` pulling new commits) applies immediately.
   A real (non-symlink) file already at the destination is backed up once to
   `<file>.rat.bak-<timestamp>` before being replaced.
@@ -159,7 +159,7 @@ installed.
   already loaded, so `log`/`ok`/`warn`/`die`, `$RAT_DIR`, `pac_install`,
   `aur_install`, and `read_list` are available.
 - **Run one module:** `./install.sh 06-gpu` (substring match). The whole thing
-  is idempotent — safe to re-run.
+  is idempotent and safe to re-run.
 - **A one-off migration for machines that already have rat-linux installed:**
   drop `patches/NNNN-name.sh` (see `patches/README.md`). `rat update` runs any
   patch newer than the machine's tracked level, oldest first.
@@ -169,7 +169,7 @@ installed.
 ## Layout
 
 ```
-boot.sh              # the only thing you curl — clones repo, runs install.sh
+boot.sh              # the only thing you curl: clones repo, runs install.sh
 install.sh           # orchestrator: sources install/[0-9]*.sh in order, primes sudo
 bin/rat              # control script once installed: `rat update`, `rat nvidia`, `rat help`
 lib/common.sh        # logging, config, read_list(), pac_install/aur_install, detect_gpu_vendors()
@@ -210,10 +210,10 @@ home/                # dotfiles symlinked into $HOME (home/.config/... -> ~/.con
 
 `06-gpu-drivers.sh` runs `lspci` (via `detect_gpu_vendors()` in `lib/common.sh`)
 to see which of AMD / Intel / Nvidia are actually present, and only installs
-the matching driver stack(s) — a hybrid Intel+Nvidia laptop gets both.
+the matching driver stack(s). A hybrid Intel+Nvidia laptop gets both.
 
 For Nvidia, it also asks once whether to use the **open-source**
-(`nvidia-open-dkms`, the default — Turing/RTX 20-series and newer) or
+(`nvidia-open-dkms`, the default for Turing/RTX 20-series and newer) or
 **proprietary** (`nvidia-dkms`, needed for older cards) kernel modules. The
 choice is remembered at `~/.local/state/rat-linux/nvidia-driver`, so re-runs
 (`rat update`) don't ask again; set `RAT_NVIDIA_DRIVER=open` or `=proprietary`

@@ -1,16 +1,11 @@
 #!/usr/bin/env bash
-# bash-it: community bash framework that drives the prompt/theme.
-# https://github.com/Bash-it/bash-it
+# bash-it (https://github.com/Bash-it/bash-it), the framework driving the
+# prompt theme. Only the framework is cloned here: home/.bashrc sources it
+# directly and sets BASH_IT_THEME itself, so bash-it's own installer never
+# runs and never touches your dotfiles.
 #
-# Only the framework itself is cloned here — home/.bashrc (symlinked by the
-# dotfiles module) sources it directly and points BASH_IT_THEME at
-# home/.config/theme/tokyo-dark.theme.bash, so there's no need to run
-# bash-it's own installer or let it touch your dotfiles.
-#
-# Part of the "theme" category (packages/categories/theme.toml, id
-# "bash-it") — see install/03-category-picker.sh. If skipped, .bashrc's
-# `[[ -f "$BASH_IT/bash_it.sh" ]]` guard keeps the shell working without it,
-# just without the themed prompt.
+# Part of the "theme" category. If skipped, .bashrc's existence guard keeps
+# the shell working, just without the themed prompt.
 
 # shellcheck source=../lib/categories.sh
 source "$RAT_DIR/lib/categories.sh"

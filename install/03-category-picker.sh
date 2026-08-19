@@ -1,17 +1,13 @@
 #!/usr/bin/env bash
-# Quick vs Custom install picker, driven by gum. Walks the five categories
-# (Dev tools, Browsers, Gaming, Updater, Theme) and writes the resolved
-# selection to $CATEGORY_STATE_FILE, which every later category-consuming
-# module (07/08/09/12/15/16) reads instead of installing everything
-# unconditionally. Core modules (GPU, services, dotfiles, base KDE theme,
-# preflight/multilib/AUR-helper) never consult this file.
+# Quick vs Custom install picker, driven by gum. Walks the five categories and
+# writes the resolved selection to $CATEGORY_STATE_FILE, which every later
+# category-consuming module reads instead of installing everything
+# unconditionally. Core modules never consult that file.
 #
-# Non-interactive runs (no /dev/tty) skip straight to Quick-install
-# defaults -- same pattern install.sh already uses for the Nvidia prompt.
+# Non-interactive runs (no /dev/tty) skip straight to Quick-install defaults.
 #
 # install.sh sources this module directly, before ui_init() takes over the
-# screen with a scroll region -- gum's interactive TUI cannot share that
-# with the rest of the run. See install.sh for details.
+# screen with a scroll region, which gum's TUI cannot share.
 
 # shellcheck source=../lib/categories.sh
 source "$RAT_DIR/lib/categories.sh"
@@ -28,7 +24,7 @@ declare -A _cat_titles=(
 )
 declare -A _cat_desc=(
   [dev-tools]="Editors, toolchains, and optional extras (HeidiSQL, Ghidra)."
-  [browsers]="Pick one or more -- multi-select."
+  [browsers]="Pick one or more."
   [gaming]="Steam, Vulkan, GameMode, and friends."
   [updater]="The rat CLI itself and what rat update/rat nvidia do."
   [theme]="TokyoNight overlay, WhiteSur cursors, bash-it, sleep/hibernate."
@@ -41,8 +37,8 @@ declare -A _cat_file=(
   [theme]="$CATEGORIES_DIR/theme.toml"
 )
 
-# Applies every category's manifest defaults into CAT_SELECTED (used by
-# Quick install, and as the non-interactive fallback).
+# Applies every category's manifest defaults into CAT_SELECTED (used by Quick
+# install, and as the non-interactive fallback).
 _apply_defaults() {
   local cat id
   for cat in "${_cat_order[@]}"; do
@@ -55,8 +51,7 @@ _apply_defaults() {
   done
 }
 
-# Prints a one-line "id (name), id (name)" summary of a category's current
-# selection, for the Quick-install confirmation and the final summary box.
+# One-line summary of a category's current selection.
 _cat_summary_line() {
   local cat="$1" file="${_cat_file[$cat]}" id name parts=()
   while IFS= read -r id; do
@@ -71,11 +66,10 @@ _cat_summary_line() {
   fi
 }
 
-# A checklist built from repeated single-select `gum choose` calls: each
-# item is rendered as "[x] Name" / "[ ] Name"; pressing enter on one just
-# flips it and redraws (there's no native "enter toggles" mode in
-# multi-select gum choose, so this fakes it with a loop). A "Submit" row
-# sits at the bottom -- picking it ends the loop.
+# A checklist built from repeated single-select `gum choose` calls: each item
+# renders as "[x] Name" / "[ ] Name", and pressing enter flips it and redraws.
+# gum choose has no native "enter toggles" mode, so this fakes it with a loop.
+# A "Submit" row at the bottom ends it.
 _run_custom_category() {
   local cat="$1" file="${_cat_file[$cat]}"
   local id name
@@ -92,13 +86,11 @@ _run_custom_category() {
   gum style --border rounded --margin "1 0" --padding "0 1" --border-foreground 212 \
     "${_cat_titles[$cat]}" "${_cat_desc[$cat]}" > /dev/tty
 
-  local submit_label="→ Submit"
+  local submit_label="Submit"
   local choices picked i any
-  # Remembers the just-toggled item's freshly-rendered "[x]/[ ] Name"
-  # string so it can be passed back as --selected on the next redraw --
-  # gum positions the cursor on whatever --selected names (confirmed: it
-  # does this even in single-select mode), so the cursor lands back on the
-  # item you just toggled instead of jumping to the top of the list.
+  # gum puts the cursor on whatever --selected names, even in single-select
+  # mode, so passing back the just-toggled row keeps the cursor there instead
+  # of jumping to the top of the list on every redraw.
   local cursor_on=""
 
   while true; do
@@ -113,10 +105,10 @@ _run_custom_category() {
     choices+=("$submit_label")
 
     if [[ -n "$cursor_on" ]]; then
-      picked="$(gum choose --header "Enter to toggle -- pick '$submit_label' when done:" \
+      picked="$(gum choose --header "Enter toggles an item. Pick '$submit_label' when done:" \
         --selected="$cursor_on" "${choices[@]}" < /dev/tty)"
     else
-      picked="$(gum choose --header "Enter to toggle -- pick '$submit_label' when done:" \
+      picked="$(gum choose --header "Enter toggles an item. Pick '$submit_label' when done:" \
         "${choices[@]}" < /dev/tty)"
     fi
 
@@ -125,7 +117,7 @@ _run_custom_category() {
         any=0
         for id in "${ids[@]}"; do [[ "${state[$id]}" == "1" ]] && any=1; done
         if [[ "$any" -eq 0 ]] \
-          && ! gum confirm "You won't have 'rat update' or 'rat nvidia' -- continue with Updater empty?" < /dev/tty > /dev/tty; then
+          && ! gum confirm "You won't have 'rat update' or 'rat nvidia'. Continue with Updater empty?" < /dev/tty > /dev/tty; then
           continue
         fi
       fi
@@ -161,8 +153,7 @@ _final_summary() {
 }
 
 if [[ -r /dev/tty ]] && command -v gum >/dev/null 2>&1; then
-  # Pre-seed from any existing state (revisiting a prior selection) so a
-  # re-run of the picker doesn't just replay the manifest defaults.
+  # Pre-seed from any existing state so a re-run doesn't just replay defaults.
   cat_state_load
 
   mode="$(gum choose --header "rat-linux install" "Quick install (defaults)" "Custom install" < /dev/tty)"
@@ -180,7 +171,7 @@ if [[ -r /dev/tty ]] && command -v gum >/dev/null 2>&1; then
     fi
   fi
 else
-  log "No TTY -- using category defaults without prompting."
+  log "No TTY; using category defaults without prompting."
   _apply_defaults
 fi
 

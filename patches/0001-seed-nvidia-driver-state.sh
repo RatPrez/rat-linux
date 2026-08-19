@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# Machines set up before GPU auto-detection (install/05-nvidia.sh used to
-# unconditionally install nvidia-open-dkms) have no
-# ~/.local/state/rat-linux/nvidia-driver file. Seed it from whatever's
-# actually installed so `rat update` / `rat nvidia` know the current variant
-# instead of re-prompting or thinking nothing is chosen.
+# Machines set up before GPU auto-detection have no
+# ~/.local/state/rat-linux/nvidia-driver file. Seed it from whatever is
+# actually installed, so `rat nvidia` knows the current variant instead of
+# thinking nothing was ever chosen.
 
 state_dir="$HOME/.local/state/rat-linux"
 state_file="$state_dir/nvidia-driver"
@@ -19,5 +18,5 @@ elif pacman -Qq nvidia-dkms >/dev/null 2>&1; then
   echo "proprietary" > "$state_file"
   ok "Recorded existing Nvidia driver as: proprietary"
 else
-  ok "No existing Nvidia driver installed — nothing to seed"
+  ok "No existing Nvidia driver installed; nothing to seed"
 fi

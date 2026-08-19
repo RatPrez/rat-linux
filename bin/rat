@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# rat — control script for a rat-linux checkout.
+# rat: control script for a rat-linux checkout.
 #
 #   rat help           show this
 #   rat update          git pull, upgrade the system (pacman/yay/flatpak),
@@ -61,7 +61,7 @@ cmd_nvidia() {
   fi
 
   if ! detect_gpu_vendors | grep -qx nvidia; then
-    warn "No Nvidia GPU detected via lspci — continuing anyway since you asked."
+    warn "No Nvidia GPU detected via lspci; continuing anyway since you asked."
   fi
 
   local current default answer chosen
@@ -69,7 +69,7 @@ cmd_nvidia() {
   default="${current:-open}"
 
   if [[ -r /dev/tty ]]; then
-    printf 'Nvidia driver — [o]pen-source / [p]roprietary (current: %s) [%s]: ' \
+    printf 'Nvidia driver, [o]pen-source or [p]roprietary (current: %s) [%s]: ' \
       "${current:-none}" "$default" > /dev/tty
     read -r answer < /dev/tty || answer=""
   else
@@ -84,7 +84,7 @@ cmd_nvidia() {
   esac
 
   if [[ "$chosen" == "$current" ]]; then
-    ok "Already on $chosen — nothing to do."
+    ok "Already on $chosen; nothing to do."
     return
   fi
 
@@ -95,7 +95,7 @@ cmd_nvidia() {
 
 usage() {
   cat <<EOF
-rat — control script for this rat-linux checkout ($RAT_DIR)
+rat: control script for this rat-linux checkout ($RAT_DIR)
 
 Usage: rat <command>
 

@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # Installs whatever was selected in the "dev-tools" category
-# (packages/categories/dev-tools.toml) via install/03-category-picker.sh:
-# pacman/AUR packages (Zed, GitHub Desktop, the optional HeidiSQL/Ghidra/
-# gh extras) plus the two toolchains deliberately kept OUTSIDE pacman
-# (Node via nvm, Rust via rustup), installed here as "script" items.
+# (packages/categories/dev-tools.toml): pacman/AUR packages, plus the two
+# toolchains deliberately kept outside pacman (Node via nvm, Rust via
+# rustup), which are wired up here as "script" items.
 
 # shellcheck source=../lib/categories.sh
 source "$RAT_DIR/lib/categories.sh"

@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
 # Shared helpers + config. Sourced by install.sh and every install/*.sh module.
 
-# --- Repo location (used by boot.sh to clone) ---------------------------------
 : "${RAT_REPO:=https://github.com/RatPrez/rat-linux.git}"
 : "${RAT_BRANCH:=master}"
 : "${RAT_DIR:=$HOME/.local/share/rat-linux}"
 
-# --- Logging ------------------------------------------------------------------
 _c_reset=$'\033[0m'; _c_blue=$'\033[1;34m'; _c_green=$'\033[1;32m'
 _c_yellow=$'\033[1;33m'; _c_red=$'\033[1;31m'
 
@@ -15,15 +13,13 @@ ok()   { printf '%s ok%s %s\n'  "$_c_green"  "$_c_reset" "$*"; }
 warn() { printf '%s!!%s %s\n'   "$_c_yellow" "$_c_reset" "$*" >&2; }
 die()  { printf '%serr%s %s\n'  "$_c_red"    "$_c_reset" "$*" >&2; exit 1; }
 
-# --- Guards -------------------------------------------------------------------
 require_not_root() {
   [[ ${EUID:-$(id -u)} -ne 0 ]] || die "Run as your normal user (it'll sudo when needed), not root."
 }
 
-# --- Exit trap registry --------------------------------------------------
 # `trap ... EXIT` overwrites any previously-set EXIT trap, which breaks once
-# more than one thing (sudo_keepalive, ui_cleanup, ...) needs to clean up on
-# exit. add_exit_trap lets each of them register independently.
+# more than one thing needs to clean up on exit. add_exit_trap lets each of
+# them register independently.
 _rat_exit_hooks=()
 add_exit_trap() {
   _rat_exit_hooks+=("$1")
@@ -42,19 +38,17 @@ read_list() {
   sed -e 's/#.*//' -e '/^[[:space:]]*$/d' -e 's/[[:space:]]//g' "$f"
 }
 
-# --- Resilient package installs ----------------------------------------------
 # Packages are installed one at a time so a single failure (missing package,
-# broken AUR build, network hiccup) is reported and skipped instead of aborting
-# the whole run. Failures accumulate in RAT_FAILED_PKGS and are summarized by
+# broken AUR build, network hiccup) is reported and skipped instead of
+# aborting the whole run. Failures accumulate here and are summarized by
 # install.sh at the end.
 RAT_FAILED_PKGS=()
 
-# Internal: run installer "$1 ..." for each remaining package, recording failures.
+# Run installer "$1 ..." for each package on stdin, recording failures.
 _install_each() {
   local label="$1"; shift
-  local installer=("$@")   # installer command WITHOUT the package name
+  local installer=("$@")
   local pkg
-  # The package list arrives on stdin (one per line) to keep quoting simple.
   while IFS= read -r pkg; do
     [[ -n "$pkg" ]] || continue
     if "${installer[@]}" "$pkg"; then
@@ -66,37 +60,28 @@ _install_each() {
   done
 }
 
-# Install official-repo packages via pacman, one at a time.
 pac_install() { _install_each "pacman" sudo pacman -S --needed --noconfirm; }
-
-# Install AUR packages via yay, one at a time.
 aur_install() { _install_each "aur" yay -S --needed --noconfirm; }
 
-# --- Sudo credential keepalive -------------------------------------------
 # Prompts for the sudo password once, then refreshes sudo's timestamp cache
-# in the background every 60s so a long multi-step run (many pacman/yay
-# calls) never prompts again mid-run. Kills the background refresher on exit.
+# in the background every 60s so a long run never prompts again mid-way.
+# Nothing is stored; the background refresher is killed on exit.
 sudo_keepalive() {
   sudo -v
   # `set +e`: this subshell otherwise inherits errexit from the sourcing
-  # script, so a single transient `sudo -n true` failure would silently kill
-  # the refresher in the background — no error visible, just the timestamp
-  # quietly lapsing and sudo prompting again out of nowhere mid-run.
+  # script, so one transient `sudo -n true` failure would silently kill the
+  # refresher and sudo would start prompting again out of nowhere.
   ( set +e; while true; do sudo -n true 2>/dev/null; sleep 60; kill -0 "$$" 2>/dev/null || exit; done ) &
-  # Deliberately not `local` — the exit hook below reads it after this
-  # function has returned, so it needs to still be in scope at script exit.
+  # Deliberately not `local`: the exit hook reads it after this returns.
   sudo_keepalive_pid=$!
   add_exit_trap 'kill "$sudo_keepalive_pid" 2>/dev/null'
 }
 
-# --- GPU detection --------------------------------------------------------
 # Prints one line per detected GPU vendor ("nvidia" / "amd" / "intel"), based
-# on lspci's VGA/3D/display controllers. A hybrid laptop (e.g. Intel + Nvidia
-# Optimus) prints more than one line — order is nvidia, amd, intel.
+# on lspci's VGA/3D/display controllers. A hybrid laptop prints more than one.
 #
-# Matched by numeric PCI vendor ID (10de/1002/8086), not vendor name text —
-# vendor name substrings like "ati" false-positive inside words such as
-# "Corporation" that show up in every vendor's lspci line.
+# Matched by numeric PCI vendor ID, not vendor name text: substrings like
+# "ati" false-positive inside words such as "Corporation".
 detect_gpu_vendors() {
   command -v lspci >/dev/null 2>&1 || sudo pacman -S --needed --noconfirm pciutils >/dev/null
   local pci

@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# Tiny bootstrap. This is the only thing you curl.
+# Tiny bootstrap, the only thing you curl. Installs git, clones the repo, then
+# hands off to install.sh.
 #
 #   bash <(curl -fsSL https://raw.githubusercontent.com/RatPrez/rat-linux/master/boot.sh)
-#
-# It installs git, clones the repo, then hands off to install.sh.
 set -euo pipefail
 
 RAT_REPO="${RAT_REPO:-https://github.com/RatPrez/rat-linux.git}"

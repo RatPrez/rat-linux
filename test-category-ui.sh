@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-# UI-only smoke test for install/03-category-picker.sh -- runs the exact
-# same gum flow (Quick vs Custom, per-category pickers, Updater-empty
-# warning, final summary) with every real pacman/AUR install swapped for a
-# harmless "would install X" print, and an isolated $HOME so nothing here
-# ever touches your real ~/.local/state/rat-linux/selected-categories.json.
+# UI-only smoke test for install/03-category-picker.sh: runs the same gum
+# flow with every real pacman/AUR install swapped for a "would install X"
+# print, and an isolated $HOME so it never touches your real
+# ~/.local/state/rat-linux/selected-categories.json.
 #
-# No sudo, no packages touched, no filesystem changes outside a throwaway
-# tmp dir that's removed on exit.
+# No sudo, no packages touched, no filesystem changes outside a throwaway tmp
+# dir that's removed on exit.
 #
 # Usage: ./test-category-ui.sh
 set -euo pipefail
@@ -16,19 +15,16 @@ export RAT_DIR
 # shellcheck source=lib/common.sh
 source "$RAT_DIR/lib/common.sh"
 
-command -v gum >/dev/null 2>&1 || die "gum isn't installed -- install it first: sudo pacman -S gum"
+command -v gum >/dev/null 2>&1 || die "gum isn't installed. Install it first: sudo pacman -S gum"
 [[ -r /dev/tty ]] || die "Needs an interactive terminal (a TTY) to test the picker."
 
-# Isolate $HOME so the real selected-categories.json is never touched, and
-# clean it up however this script exits (success, error, or Ctrl-C).
+# Isolated $HOME, removed however this script exits.
 test_home="$(mktemp -d)"
 trap 'rm -rf "$test_home"' EXIT
 export HOME="$test_home"
 
-# Override pac_install/aur_install with harmless prints. Bash looks up a
-# function by name at call time, so these just take over from the real
-# ones lib/common.sh defined above once install/03-category-picker.sh
-# sources categories.sh and calls them.
+# Bash resolves function names at call time, so these take over from the real
+# pac_install/aur_install that lib/common.sh defined above.
 pac_install() {
   local pkg
   while IFS= read -r pkg; do

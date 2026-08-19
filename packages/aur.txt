@@ -1,10 +1,5 @@
-# AUR packages installed via yay.
-# One per line. Blank lines and # comments ignored.
-#
-# Browsers, dev-tool extras, gaming extras, and theming packages (Brave,
-# GitHub Desktop, Faugus Launcher, WhiteSur cursors, ...) live in
-# packages/categories/*.toml instead — see install/07-browsers.sh,
-# install/08-dev-tools.sh, install/09-gaming.sh, install/15-theme.sh.
+# AUR packages installed unconditionally via yay. One per line.
+# Anything user-optional lives in packages/categories/*.toml instead.
 
 # --- Dev / desktop ---
 xwaylandvideobridge   # lets XWayland apps (Discord etc.) see Wayland screenshares

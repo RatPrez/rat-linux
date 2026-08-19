@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Install everything from packages/flatpak.txt via flatpak, one at a time so a
-# single failure is skipped rather than aborting the batch. Adds the Flathub
-# remote first if it isn't already configured.
+# Install everything from packages/flatpak.txt, one at a time so a single
+# failure is skipped rather than aborting the batch. Adds the Flathub remote
+# first if it isn't already configured.
 
 if ! command -v flatpak >/dev/null 2>&1; then
   warn "flatpak not installed; skipping Flatpak apps"

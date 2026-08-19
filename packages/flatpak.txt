@@ -1,4 +1,3 @@
-# Flatpak apps installed via flatpak (Flathub).
-# One per line (app ID). Blank lines and # comments ignored.
+# Flatpak apps installed from Flathub. One app ID per line.
 
 com.usebottles.bottles   # run Windows apps/games in isolated Wine prefixes

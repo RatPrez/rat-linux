@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
-# Category-optional theme extras (packages/categories/theme.toml), gated by
-# install/03-category-picker.sh's "theme" selection:
+# Category-optional theme extras (packages/categories/theme.toml):
 #   - tokyonight               TokyoNight color scheme + kwin decoration
 #   - whitesur-cursors         WhiteSur cursor theme (AUR package + apply)
 #   - sleep-hibernate-disable  mask the systemd sleep/suspend/hibernate targets
-# (bash-it is a separate item in the same category, handled by
-# install/12-bash-it.sh instead, since it's not a KDE setting.)
+# bash-it is in the same category but handled by install/12-bash-it.sh, since
+# it isn't a KDE setting.
 #
-# Must run AFTER install/14-postinstall.sh — applying the Breeze Dark
-# global look-and-feel there resets the color scheme, so this has to layer
-# TokyoNight on top rather than the other way around.
+# Must run after install/14-postinstall.sh: applying the Breeze Dark global
+# look-and-feel there resets the color scheme, so TokyoNight has to layer on
+# top rather than the other way around.
 
 # shellcheck source=../lib/categories.sh
 source "$RAT_DIR/lib/categories.sh"
@@ -26,8 +25,7 @@ else
   return 0 2>/dev/null || exit 0
 fi
 
-# Package(s) first (whitesur-cursor-theme-git) so the setting applied below
-# has something to point at.
+# Packages first, so the settings applied below have something to point at.
 install_category "theme" "$theme_file"
 
 if cat_is_selected "theme" "tokyonight" "$theme_file"; then

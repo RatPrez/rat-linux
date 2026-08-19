@@ -1,11 +1,9 @@
 # Theme category. "custom" items are applied by install/15-theme.sh directly
-# (KDE settings, systemd masking) rather than installed as packages; only
-# "whitesur-cursors" is an actual package (AUR) on top of its settings.
+# (KDE settings, systemd masking) rather than installed as packages.
 #
-# Breeze Dark, animation speed, empty-session login, and regional format
-# stay core in install/14-postinstall.sh -- they're the base look rat-linux
-# always applies, not part of this category. See install/14-postinstall.sh
-# for why that split was made.
+# Breeze Dark, animation speed, empty-session login, and regional format stay
+# core in install/14-postinstall.sh; they're the base look rat-linux always
+# applies, not part of this category.
 
 [[item]]
 id = "tokyonight"

@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 # Detects the GPU vendor(s) present (AMD / Intel / Nvidia, via lspci) and
-# installs the matching driver stack for each. Hybrid setups (e.g. an Intel +
-# Nvidia Optimus laptop) get both stacks installed.
+# installs the matching driver stack for each. Hybrid setups get both.
 #
-# Nvidia additionally needs a choice between its open-source and proprietary
-# kernel modules — prompted once and remembered in
+# Nvidia also needs a choice between its open-source and proprietary kernel
+# modules, prompted once and remembered in
 # ~/.local/state/rat-linux/nvidia-driver (set RAT_NVIDIA_DRIVER=open|proprietary
-# to skip the prompt). Re-runs (e.g. `rat update`) reuse that choice instead of
-# asking again; use `rat nvidia` to change it later.
+# to skip the prompt). Use `rat nvidia` to change it later.
 
 # shellcheck source=../lib/nvidia.sh
 source "$RAT_DIR/lib/nvidia.sh"
@@ -22,11 +20,11 @@ fi
 for vendor in "${gpus[@]}"; do
   case "$vendor" in
     amd)
-      log "AMD GPU detected — installing mesa/Vulkan (RADV) stack"
+      log "AMD GPU detected, installing mesa/Vulkan (RADV) stack"
       pac_install < <(read_list "$RAT_DIR/packages/gpu-amd.txt")
       ;;
     intel)
-      log "Intel GPU detected — installing mesa/Vulkan (ANV) stack"
+      log "Intel GPU detected, installing mesa/Vulkan (ANV) stack"
       pac_install < <(read_list "$RAT_DIR/packages/gpu-intel.txt")
       ;;
     nvidia)

@@ -1,19 +1,16 @@
 #!/usr/bin/env bash
-# Category manifest parsing + selection state, shared by install/03-category-picker.sh,
-# every category-consuming module (browsers/dev-tools/gaming/bash-it/theme/rat-cli), and
-# `bin/rat` (which reads the "updater" category's toggles at runtime).
+# Category manifest parsing + selection state, shared by the category picker,
+# every category-consuming module, and `bin/rat` (which reads the "updater"
+# category's toggles at runtime).
 #
 # Manifest format: packages/categories/<name>.toml, one [[item]] block per entry:
 #   [[item]]
-#   id = "brave"          # stable key, used in the state file
+#   id = "brave"           # stable key, used in the state file
 #   name = "Brave"         # shown in the gum picker
 #   source = "pacman"      # pacman | aur | flatpak | script | toggle | custom
-#   package = "brave-bin"  # space-separated package name(s); omitted for script/toggle/custom
+#   package = "brave-bin"  # space-separated name(s); omitted for script/toggle/custom
 #   default = true         # preselected for Quick install and fresh Custom pickers
-#   description = "..."    # optional, shown in gum style headers
-#
-# Sourced with lib/common.sh already loaded, so log/ok/warn/die, $RAT_DIR,
-# pac_install, aur_install, read_list are available.
+#   description = "..."    # optional
 
 CATEGORIES_DIR="$RAT_DIR/packages/categories"
 CATEGORY_STATE_FILE="$HOME/.local/state/rat-linux/selected-categories.json"
@@ -22,8 +19,7 @@ CATEGORY_STATE_FILE="$HOME/.local/state/rat-linux/selected-categories.json"
 declare -gA CAT_SELECTED=()
 _cat_state_loaded=0
 
-# --- TOML parsing --------------------------------------------------------------
-# Emits one TSV line per [[item]]: id \t name \t source \t package \t default(1|0) \t description
+# Emits one TSV line per [[item]]: id, name, source, package, default(1|0), description
 cat_parse() {
   local file="$1"
   [[ -f "$file" ]] || die "Category manifest not found: $file"
@@ -66,7 +62,7 @@ cat_ids() { cat_parse "$1" | cut -f1; }
 # Ids whose default = true.
 cat_default_ids() { cat_parse "$1" | awk -F'\t' '$5 == 1 { print $1 }'; }
 
-# One field ("id"|"name"|"source"|"package"|"default"|"description") for a given id.
+# One field for a given id.
 cat_field() {
   local file="$1" id="$2" field="$3" col
   case "$field" in
@@ -77,7 +73,6 @@ cat_field() {
   cat_parse "$file" | awk -F'\t' -v id="$id" -v c="$col" '$1 == id { print $c; exit }'
 }
 
-# --- Selection state -------------------------------------------------------
 # Loads $CATEGORY_STATE_FILE (if present) into CAT_SELECTED. Safe to call
 # repeatedly; only parses the file once per process.
 cat_state_load() {
@@ -93,8 +88,7 @@ cat_state_load() {
              | sed -E 's/\ttrue$/\t1/; s/\tfalse$/\t0/')
 }
 
-# Writes CAT_SELECTED out as JSON: {"category.id": true, ...}. Called once by
-# the picker after all categories are resolved.
+# Writes CAT_SELECTED out as JSON: {"category.id": true, ...}.
 cat_state_save() {
   mkdir -p "$(dirname "$CATEGORY_STATE_FILE")"
   {
@@ -114,10 +108,9 @@ cat_state_save() {
   } > "$CATEGORY_STATE_FILE"
 }
 
-# True (exit 0) if <category>.<id> is selected: state file wins if present,
-# otherwise falls back to the manifest's own default — so a category module
-# run standalone (state file missing, e.g. `./install.sh 09-gaming`) still
-# does something sane instead of installing nothing.
+# True if <category>.<id> is selected: state file wins if present, otherwise
+# the manifest's own default, so a module run standalone (state file missing)
+# still does something sane instead of installing nothing.
 cat_is_selected() {
   local category="$1" id="$2" file="$3"
   cat_state_load
@@ -129,15 +122,13 @@ cat_is_selected() {
   [[ "$(cat_field "$file" "$id" default)" == "1" ]]
 }
 
-# Record a selection (used by the picker while building up CAT_SELECTED
-# before cat_state_save).
+# Record a selection (val: 1|0).
 cat_set_selected() {
-  local category="$1" id="$2" val="$3"   # val: 1|0
+  local category="$1" id="$2" val="$3"
   CAT_SELECTED["$category.$id"]="$val"
 }
 
-# Ids in a manifest that are currently selected (state file, or defaults if
-# no state file / no key for that id yet).
+# Ids in a manifest that are currently selected.
 cat_selected_ids() {
   local category="$1" file="$2" id
   while IFS= read -r id; do
@@ -145,14 +136,10 @@ cat_selected_ids() {
   done < <(cat_ids "$file")
 }
 
-# --- Generic installer -----------------------------------------------------
-# Installs every currently-selected item in a manifest. pacman/aur/flatpak
-# items are batched through pac_install/aur_install/flatpak; "script" items
-# call a function named "<script_prefix>_<id>" that the caller must have
-# defined first (falls back to a warning if it hasn't). "toggle" and
-# "custom" items are no-ops here -- toggles are read live by their consumer
-# (e.g. bin/rat), and "custom" items are handled by the calling module
-# itself (e.g. theme application logic in install/15-theme.sh).
+# Installs every currently-selected item in a manifest. "script" items call a
+# function named "<script_prefix>_<id>" that the caller must have defined.
+# "toggle" and "custom" items are no-ops here: toggles are read live by their
+# consumer (bin/rat), and custom items are handled by the calling module.
 install_category() {
   local category="$1" file="$2" script_prefix="${3:-}"
   local id source package pkg

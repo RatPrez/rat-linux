@@ -1,14 +1,10 @@
 #!/usr/bin/env bash
-# Base KDE Plasma settings + default apps. These write user config files, so most
-# take effect at the NEXT login (log out/in or reboot).
+# Base KDE Plasma settings + default apps. These write user config files, so
+# most take effect at the next login.
 #
-# This is the CORE look rat-linux always applies -- Breeze Dark, animation
-# speed, empty-session login, regional format, default apps, font cache,
-# keyring reset. The TokyoNight color scheme/decoration overlay, WhiteSur
-# cursors, and sleep/hibernate masking are category-optional (theme.toml)
-# and live in install/15-theme.sh instead, which runs right after this
-# module (it must run after Breeze Dark is applied here, since applying a
-# global look-and-feel resets the color scheme).
+# This is the core look rat-linux always applies. The optional theme layer
+# lives in install/15-theme.sh, which must run after this module: applying a
+# global look-and-feel here resets the color scheme.
 
 # Plasma 6 uses kwriteconfig6; fall back to 5 just in case.
 if command -v kwriteconfig6 >/dev/null 2>&1; then
@@ -20,7 +16,6 @@ else
   return 0 2>/dev/null || exit 0
 fi
 
-# --- Dark mode ----------------------------------------------------------------
 log "Theme -> dark (Breeze Dark)"
 if command -v plasma-apply-lookandfeel >/dev/null 2>&1; then
   plasma-apply-lookandfeel -a org.kde.breezedark.desktop >/dev/null 2>&1 \
@@ -30,16 +25,13 @@ else
   "$kw" --file kdeglobals --group General --key ColorScheme BreezeDark
 fi
 
-# --- Animation speed (snappy, ~6/7 toward Instant) ----------------------------
-# kdeglobals [KDE] AnimationDurationFactor: 1.0 = default, 0 = instant.
+# AnimationDurationFactor: 1.0 = default, 0 = instant.
 log "Animation speed -> snappy (0.25)"
 "$kw" --file kdeglobals --group KDE --key AnimationDurationFactor 0.25
 
-# --- Session restore: start with an empty session -----------------------------
 log "Login -> empty session"
 "$kw" --file ksmserverrc --group General --key loginMode emptySession
 
-# --- Australian regional formats (DD/MM/YYYY dates) ---------------------------
 log "Regional format -> en_AU (DD/MM/YYYY)"
 if ! locale -a 2>/dev/null | grep -qiE '^en_AU\.utf-?8$'; then
   if grep -qE '^#?en_AU\.UTF-8 UTF-8' /etc/locale.gen; then
@@ -51,7 +43,6 @@ if ! locale -a 2>/dev/null | grep -qiE '^en_AU\.utf-?8$'; then
 fi
 "$kw" --file plasma-localerc --group Formats --key LANG en_AU.UTF-8
 
-# --- Default applications -----------------------------------------------------
 log "Default apps -> brave / mpv / elisa / zed"
 set_default() {  # $1 = desktop id, rest = mimetypes
   local desk="$1"; shift
@@ -71,9 +62,8 @@ set_default dev.zed.Zed.desktop text/plain text/x-csrc text/x-chdr application/j
 
 ok "KDE base settings applied. Log out/in (or reboot) for everything to take effect."
 
-# --- Font cache ---------------------------------------------------------------
-# Rebuild the fontconfig cache so the fonts installed above (Noto + Nerd) are
-# picked up without needing a reboot first.
+# Rebuild the fontconfig cache so the fonts installed above are picked up
+# without needing a reboot first.
 log "Rebuilding font cache (fc-cache -fv)"
 if command -v fc-cache >/dev/null 2>&1; then
   fc-cache -fv >/dev/null 2>&1 || warn "fc-cache reported an error; fonts may need a reboot."
@@ -82,12 +72,10 @@ else
   warn "fc-cache not found; skipping font cache rebuild."
 fi
 
-# --- ProtonVPN / gnome-keyring reset ------------------------------------------
-# On a fresh install the gnome-keyring "login" keyring can be missing or stale,
-# which leaves ProtonVPN unable to store its session ("keyring is locked" /
-# credentials not saved). Clearing the keyring files forces gnome-keyring to
-# regenerate a fresh login keyring at the next login (PAM unlocks it with your
-# password). Safe here because a fresh install has no secrets worth keeping.
+# On a fresh install the gnome-keyring "login" keyring can be missing or
+# stale, leaving ProtonVPN unable to store its session. Clearing the keyring
+# files makes gnome-keyring regenerate one at the next login, when PAM unlocks
+# it with your password. Safe here because a fresh install has no secrets.
 keyring_dir="$HOME/.local/share/keyrings"
 if [[ -d "$keyring_dir" ]] && compgen -G "$keyring_dir/*.keyring" >/dev/null; then
   log "Resetting gnome-keyring so ProtonVPN can regenerate it"

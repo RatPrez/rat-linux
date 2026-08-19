@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Installs whichever gaming packages were selected in the "gaming" category
-# (packages/categories/gaming.toml) via install/03-category-picker.sh.
+# (packages/categories/gaming.toml).
 
 # shellcheck source=../lib/categories.sh
 source "$RAT_DIR/lib/categories.sh"

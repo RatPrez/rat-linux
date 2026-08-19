@@ -1,31 +1,24 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ------------------------------------------------------------------
-# Arch Linux post-install setup script
-# Run as a regular user with sudo privileges (NOT as root).
-# ------------------------------------------------------------------
+# Superseded by install.sh. Kept for reference only.
 
 if [[ $EUID -eq 0 ]]; then
   echo "Don't run this as root. Run as your normal user (it'll sudo when needed)."
   exit 1
 fi
 
-# ------------------------------------------------------------------
-# 1. Enable multilib (needed for Steam, 32-bit Nvidia/Vulkan libs)
-# ------------------------------------------------------------------
+# Enable multilib (needed for Steam, 32-bit Nvidia/Vulkan libs).
 if ! grep -q "^\[multilib\]" /etc/pacman.conf; then
   echo "Enabling multilib repo..."
   sudo sed -i "/\[multilib\]/,/Include/"'s/^#//' /etc/pacman.conf
-  # Fallback in case multilib block is fully commented as a pair of lines
+  # Fallback in case the multilib block is commented as a pair of lines.
   sudo sed -i '/^#\[multilib\]/,+1 s/^#//' /etc/pacman.conf
 fi
 
 sudo pacman -Sy --noconfirm
 
-# ------------------------------------------------------------------
-# 2. Base groups required before anything else
-# ------------------------------------------------------------------
+# Base groups required before anything else.
 BASE_PACKAGES=(
   base-devel
   linux-headers
@@ -34,9 +27,7 @@ BASE_PACKAGES=(
 
 sudo pacman -S --needed --noconfirm "${BASE_PACKAGES[@]}"
 
-# ------------------------------------------------------------------
-# 3. Install an AUR helper (yay) if not already present
-# ------------------------------------------------------------------
+# Install an AUR helper (yay) if not already present.
 if ! command -v yay &>/dev/null; then
   echo "Installing yay (AUR helper)..."
   tmpdir=$(mktemp -d)
@@ -45,9 +36,7 @@ if ! command -v yay &>/dev/null; then
   rm -rf "$tmpdir"
 fi
 
-# ------------------------------------------------------------------
-# 4. Pacman (official repo) packages
-# ------------------------------------------------------------------
+# Pacman (official repo) packages.
 PACMAN_PACKAGES=(
   # --- Nvidia (proprietary) ---
   nvidia-dkms
@@ -102,9 +91,7 @@ PACMAN_PACKAGES=(
 
 sudo pacman -S --needed --noconfirm "${PACMAN_PACKAGES[@]}"
 
-# ------------------------------------------------------------------
-# 5. AUR packages
-# ------------------------------------------------------------------
+# AUR packages.
 AUR_PACKAGES=(
   xwaylandvideobridge
   davinci-resolve
@@ -116,9 +103,7 @@ AUR_PACKAGES=(
 
 yay -S --needed --noconfirm "${AUR_PACKAGES[@]}"
 
-# ------------------------------------------------------------------
-# 6. Node via nvm (not pacman nodejs/npm)
-# ------------------------------------------------------------------
+# Node via nvm (not pacman nodejs/npm).
 if [[ ! -d "$HOME/.nvm" ]]; then
   echo "Installing nvm..."
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
@@ -128,24 +113,18 @@ if [[ ! -d "$HOME/.nvm" ]]; then
   nvm install --lts
 fi
 
-# ------------------------------------------------------------------
-# 7. Rust via rustup (not pacman cargo/rust)
-# ------------------------------------------------------------------
+# Rust via rustup (not pacman cargo/rust).
 if ! command -v rustup &>/dev/null; then
   echo "Installing rustup..."
   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 fi
 
-# ------------------------------------------------------------------
-# 8. Enable services
-# ------------------------------------------------------------------
+# Enable services.
 sudo systemctl enable --now NetworkManager
 sudo systemctl enable --now bluetooth
 sudo systemctl enable sddm
 
-# ------------------------------------------------------------------
-# 9. Nvidia + Wayland kernel params reminder
-# ------------------------------------------------------------------
+# Nvidia + Wayland kernel params reminder.
 cat <<'EOF'
 
 ------------------------------------------------------------------

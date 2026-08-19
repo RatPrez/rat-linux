@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
-# Nvidia driver install/switch helpers. Shared by install/06-gpu-drivers.sh
-# (first install) and `rat nvidia` (switching later). Sourced with
-# lib/common.sh already loaded, so log/ok/warn/die, $RAT_DIR, pac_install,
-# and read_list are available.
+# Nvidia driver install/switch helpers, shared by install/06-gpu-drivers.sh
+# (first install) and `rat nvidia` (switching later).
 
 nvidia_state_file="$HOME/.local/state/rat-linux/nvidia-driver"
 
@@ -23,8 +21,8 @@ nvidia_pkg_file() {
 }
 
 # Ask (or read $RAT_NVIDIA_DRIVER) which variant to use. Falls back to "open"
-# non-interactively — that's Arch's recommended default for Turing/RTX
-# 20-series and newer; older cards should set RAT_NVIDIA_DRIVER=proprietary.
+# non-interactively, Arch's recommended default for Turing/RTX 20-series and
+# newer; older cards should set RAT_NVIDIA_DRIVER=proprietary.
 prompt_nvidia_variant() {
   local answer="${RAT_NVIDIA_DRIVER:-}"
   if [[ -z "$answer" ]]; then
@@ -69,8 +67,8 @@ EOF
 }
 
 # Install $1 (open|proprietary): removes the other variant's kernel-module
-# package if it's installed, installs the chosen one, records the choice,
-# and (re)wires up DRM modeset. Idempotent — safe to call with the variant
+# package if present, installs the chosen one, records the choice, and
+# (re)wires DRM modeset. Idempotent, so it's safe to call with the variant
 # already active.
 install_nvidia_driver() {
   local variant="$1" other_pkg

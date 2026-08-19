@@ -1,9 +1,6 @@
-# Official-repo packages installed via pacman.
-# One per line. Blank lines and # comments ignored.
-
-# --- GPU drivers ---
-# Handled separately by install/06-gpu-drivers.sh based on detected hardware:
-# packages/gpu-{amd,intel}.txt and packages/gpu-nvidia-{open,proprietary}.txt.
+# Official-repo packages installed unconditionally via pacman. One per line.
+# GPU drivers are handled separately by install/06-gpu-drivers.sh, and
+# anything user-optional lives in packages/categories/*.toml.
 
 # --- Filesystems (Windows drive support) ---
 ntfs-3g             # read/write NTFS
@@ -28,7 +25,7 @@ pipewire
 pipewire-pulse
 pipewire-alsa
 wireplumber
-sof-firmware        # Intel SOF codecs (most laptops) — no devices without this
+sof-firmware        # Intel SOF codecs; most laptops surface no audio devices without this
 alsa-ucm-conf       # per-machine UCM profiles so devices actually surface
 alsa-firmware       # extra codec firmware blobs
 alsa-utils          # alsamixer / speaker-test / aplay for debugging
@@ -42,9 +39,6 @@ networkmanager
 bluez
 bluez-utils
 
-# --- Gaming / Vulkan ---
-# Handled by install/09-gaming.sh based on packages/categories/gaming.toml.
-
 # --- Apps ---
 alacritty
 blender
@@ -55,12 +49,12 @@ qbittorrent
 spotify-launcher
 dolphin             # KDE file manager
 elisa               # KDE music player (default audio)
-kate                # advanced text editor — also provides the `kwrite` binary
+kate                # advanced text editor; also provides the `kwrite` binary
 kcalc               # KDE calculator
 spectacle           # KDE screenshot tool
 ark                 # KDE archive manager
 libreoffice-fresh   # office suite
-gnome-disk-utility  # GNOME Disks — partition / mount / SMART GUI
+gnome-disk-utility  # GNOME Disks, a partition / mount / SMART GUI
 
 # --- CLI / system tools ---
 btop                # process + resource monitor
@@ -69,7 +63,7 @@ cpupower            # CPU governor control (cpupower.service, see README)
 nano
 xdotool
 wmctrl
-cpu-x               # GUI system/CPU info (neofetch-ish but graphical)
+cpu-x               # GUI system/CPU info
 webkit2gtk-4.1       # embedded web renderer some apps depend on
 
 # --- Codecs ---
@@ -91,10 +85,7 @@ python-pipx
 python-pyqt6
 
 # --- Secrets ---
-# ProtonVPN (and other apps) store credentials via the Secret Service API.
-# gnome-keyring provides that backend; 14-postinstall resets a stale/locked
-# login keyring so ProtonVPN can save its session on a fresh install.
-gnome-keyring
+gnome-keyring       # Secret Service backend; ProtonVPN stores its session here
 
 # --- Fonts ---
 noto-fonts

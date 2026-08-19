@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
-# Symlink dotfiles from the repo's home/ into your $HOME, so config is always
-# read live from this checkout ($RAT_DIR) — edit a file here (or `rat update`
-# to pull new commits) and every symlinked app picks it up immediately, no
-# re-copy step needed.
+# Symlink dotfiles from the repo's home/ into $HOME, so config is read live
+# from this checkout: editing a file here (or `rat update` pulling new
+# commits) applies immediately, with no re-copy step.
 #
 # Everything under home/ mirrors your real home directory 1:1, e.g.
-#   home/.config/zed/settings.json  ->  ~/.config/zed/settings.json (symlink)
-#   home/.clang-format              ->  ~/.clang-format (symlink)
+#   home/.config/zed/settings.json  ->  ~/.config/zed/settings.json
 #
-# A real (non-rat-linux) file already at the destination is backed up once
-# (<file>.rat.bak-<timestamp>) before being replaced with the symlink. Links
-# that already point at the right place are left alone, which keeps re-runs
-# quiet and idempotent.
+# A real (non-symlink) file already at the destination is backed up once as
+# <file>.rat.bak-<timestamp> before being replaced. Links already pointing at
+# the right place are left alone, which keeps re-runs idempotent.
 
 src="$RAT_DIR/home"
 
@@ -24,10 +21,9 @@ log "Symlinking dotfiles from home/ into $HOME"
 ts="$(date +%Y%m%d%H%M%S)"
 count=0
 
-# Walk every regular file under home/ and symlink it into $HOME, preserving
-# the relative path (-print0/-d '' so paths with spaces survive).
+# -print0 / -d '' so paths with spaces survive.
 while IFS= read -r -d '' file; do
-  rel="${file#"$src"/}"            # path relative to home/
+  rel="${file#"$src"/}"
   dest="$HOME/$rel"
 
   if [[ -L "$dest" ]]; then

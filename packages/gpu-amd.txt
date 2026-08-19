@@ -1,5 +1,5 @@
 # AMD GPU stack: mesa RADV Vulkan driver + VA-API/VDPAU video acceleration.
-# Installed by install/05-gpu-drivers.sh when an AMD/ATI GPU is detected.
+# Installed by install/06-gpu-drivers.sh when an AMD GPU is detected.
 mesa
 lib32-mesa
 vulkan-radeon

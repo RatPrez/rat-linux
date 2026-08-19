@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# CHANGELOG: Disable the baloo file indexer (baloo_file / baloo_file_extractor) — it was pegging a core and causing UI lag
+# CHANGELOG: Disable the baloo file indexer (baloo_file / baloo_file_extractor), which was pegging a core and causing UI lag
 # CHANGELOG: Mask kde-baloo.service (systemd --user) so it doesn't restart itself on next login
 # CHANGELOG: Kill any baloo_file / baloo_file_extractor processes already running
 
 if ! command -v balooctl6 >/dev/null 2>&1; then
-  ok "balooctl6 not found (baloo not installed) — nothing to disable"
+  ok "balooctl6 not found (baloo not installed); nothing to disable"
   return 0
 fi
 
