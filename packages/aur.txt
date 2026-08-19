@@ -3,4 +3,3 @@
 
 appimagelauncher      # integrates .AppImage files into the app menu
 imageviewer           # lightweight image viewer
-vesktop               # Discord client with Vencord built in, native Wayland screenshare

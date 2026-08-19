@@ -3,6 +3,22 @@
 # Everything here defaults off.
 
 [[item]]
+id = "vesktop"
+name = "Vesktop (Discord)"
+description = "Vesktop is a customizable and privacy friendly Discord desktop app!"
+source = "aur"
+package = "vesktop"
+default = true
+
+[[item]]
+id = "proton-vpn"
+name = "Proton VPN"
+description = "ProtonVPN client (GUI)"
+source = "pacman"
+package = "proton-vpn-gtk-app"
+default = false
+
+[[item]]
 id = "mullvad"
 name = "Mullvad VPN"
 description = "WireGuard/OpenVPN client, in [extra]"

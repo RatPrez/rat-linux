@@ -11,6 +11,14 @@ package = "zed"
 default = true
 
 [[item]]
+id = "code"
+name = "VSC"
+description = "Visual Studio Code"
+source = "pacman"
+package = "code"
+default = false
+
+[[item]]
 id = "github-desktop"
 name = "GitHub Desktop"
 source = "aur"
