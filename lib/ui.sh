@@ -69,6 +69,79 @@ _rat_ui_header() {
   fi
 }
 
+# Author, source link and disclaimer, followed by a Continue / Cancel gate.
+# Shown before anything is installed and before the sudo prompt, so it is read
+# before a password gets typed. Aborts the run if the user cancels.
+# Drawn with plain ANSI rather than gum: on a fresh Arch base gum is not
+# installed yet. Content is deliberately ASCII, so the box still lines up
+# under a non-UTF-8 locale, where ${#str} counts bytes rather than characters.
+ui_intro() {
+  local lines=(
+    "rat-linux, by Richard Saville"
+    "${RAT_REPO%.git}"
+    ""
+    "This installs packages, enables system services, and overwrites"
+    "desktop and system configuration."
+    ""
+    "PLEASE READ THE SOURCE CODE BEFORE EXECUTING IT."
+    ""
+    "Provided AS IS, without warranty of any kind, express or implied,"
+    "and without support. You run it entirely at your own risk."
+    "MIT licensed; see LICENSE."
+  )
+
+  local tl='+' tr='+' bl='+' br='+' hz='-' vt='|'
+  if [[ "${TERM:-}" != "linux" ]]; then
+    tl='\u256d'; tr='\u256e'; bl='\u2570'; br='\u256f'; hz='\u2500'; vt='\u2502'
+    printf -v tl '%b' "$tl"; printf -v tr '%b' "$tr"
+    printf -v bl '%b' "$bl"; printf -v br '%b' "$br"
+    printf -v hz '%b' "$hz"; printf -v vt '%b' "$vt"
+  fi
+
+  local line width=0
+  for line in "${lines[@]}"; do
+    (( ${#line} > width )) && width=${#line}
+  done
+
+  local rule='' i
+  for ((i = 0; i < width + 2; i++)); do rule+="$hz"; done
+
+  printf '\n%s%s%s%s%s\n' "$_rat_c_accent" "$tl" "$rule" "$tr" "$_rat_c_off"
+  for line in "${lines[@]}"; do
+    printf '%s%s%s %-*s %s%s%s\n' \
+      "$_rat_c_accent" "$vt" "$_rat_c_off" \
+      "$width" "$line" \
+      "$_rat_c_accent" "$vt" "$_rat_c_off"
+  done
+  printf '%s%s%s%s%s\n\n' "$_rat_c_accent" "$bl" "$rule" "$br" "$_rat_c_off"
+
+  # Continue / Cancel gate. gum is not installed yet on a fresh base, so this
+  # falls back to a plain read. Cancel is the default in both paths, and
+  # cancelling here has changed nothing: no module has run and sudo has not
+  # even been asked for yet.
+  # Actually open /dev/tty rather than testing -r on it: the node can be
+  # readable while the process has no controlling terminal, in which case the
+  # test passes but every read and write below fails.
+  if ! { : < /dev/tty; } 2>/dev/null; then
+    warn "No usable TTY to confirm on; continuing non-interactively."
+    return 0
+  fi
+
+  if _rat_has_gum; then
+    gum confirm "Continue with the install?" \
+      --affirmative "Continue" --negative "Cancel" \
+      < /dev/tty > /dev/tty || die "Cancelled. Nothing has been changed."
+  else
+    local answer=""
+    printf 'Continue with the install? [Continue: y / Cancel: N] ' > /dev/tty
+    read -r answer < /dev/tty || answer=""
+    case "${answer,,}" in
+      y|yes) ;;
+      *) die "Cancelled. Nothing has been changed." ;;
+    esac
+  fi
+}
+
 # Draw the art, carve out the scroll region, show progress at 0. Call once
 # with the total number of steps the progress bar should track.
 ui_init() {

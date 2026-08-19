@@ -16,6 +16,7 @@ source "$RAT_DIR/lib/ui.sh"
 source "$RAT_DIR/lib/patches.sh"
 
 require_not_root
+ui_intro
 sudo_keepalive
 
 filter="${1:-}"
