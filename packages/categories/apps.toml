@@ -1,0 +1,27 @@
+# Extra apps category: optional VPN clients and office suite, on top of the
+# ProtonVPN and LibreOffice that packages/pacman.txt installs unconditionally.
+# Everything here defaults off.
+
+[[item]]
+id = "mullvad"
+name = "Mullvad VPN"
+description = "WireGuard/OpenVPN client, in [extra]"
+source = "pacman"
+package = "mullvad-vpn"
+default = false
+
+[[item]]
+id = "nymvpn"
+name = "NymVPN"
+description = "Mixnet VPN; pulls the nym-vpnd daemon in as a dependency"
+source = "aur"
+package = "nym-vpn-app"
+default = false
+
+[[item]]
+id = "onlyoffice"
+name = "OnlyOffice"
+description = "MS Office-compatible suite, alongside LibreOffice"
+source = "aur"
+package = "onlyoffice-bin"
+default = false

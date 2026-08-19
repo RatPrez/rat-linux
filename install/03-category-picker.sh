@@ -14,11 +14,12 @@ source "$RAT_DIR/lib/categories.sh"
 
 pac_install <<<"gum"
 
-_cat_order=(dev-tools browsers gaming updater theme)
+_cat_order=(dev-tools browsers gaming apps updater theme)
 declare -A _cat_titles=(
   [dev-tools]="Dev tools"
   [browsers]="Browsers"
   [gaming]="Gaming"
+  [apps]="Extra apps"
   [updater]="Updater (rat commands)"
   [theme]="Theme"
 )
@@ -26,6 +27,7 @@ declare -A _cat_desc=(
   [dev-tools]="Editors, toolchains, and optional extras (HeidiSQL, Ghidra)."
   [browsers]="Pick one or more."
   [gaming]="Steam, Vulkan, GameMode, and friends."
+  [apps]="Optional VPN clients and office suite. All default off."
   [updater]="The rat CLI itself and what rat update/rat nvidia do."
   [theme]="TokyoNight overlay, WhiteSur cursors, bash-it, sleep/hibernate."
 )
@@ -33,6 +35,7 @@ declare -A _cat_file=(
   [dev-tools]="$CATEGORIES_DIR/dev-tools.toml"
   [browsers]="$CATEGORIES_DIR/browsers.toml"
   [gaming]="$CATEGORIES_DIR/gaming.toml"
+  [apps]="$CATEGORIES_DIR/apps.toml"
   [updater]="$CATEGORIES_DIR/updater.toml"
   [theme]="$CATEGORIES_DIR/theme.toml"
 )
