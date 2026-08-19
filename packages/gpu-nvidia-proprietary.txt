@@ -1,8 +1,0 @@
-# Nvidia proprietary (closed-source) kernel modules. Needed for pre-Turing
-# GPUs (older than RTX 20-series / GTX 16-series); works on newer ones too.
-nvidia-dkms
-nvidia-utils
-lib32-nvidia-utils
-nvidia-settings
-egl-wayland
-opencl-nvidia

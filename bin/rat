@@ -4,7 +4,6 @@
 #   rat help           show this
 #   rat update          git pull, upgrade the system (pacman/yay/flatpak),
 #                        then apply pending patches
-#   rat nvidia          switch between open-source and proprietary Nvidia drivers
 #   rat patch-status    show which patch this machine is currently up to
 set -euo pipefail
 
@@ -12,8 +11,6 @@ RAT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
 export RAT_DIR
 # shellcheck source=lib/common.sh
 source "$RAT_DIR/lib/common.sh"
-# shellcheck source=lib/nvidia.sh
-source "$RAT_DIR/lib/nvidia.sh"
 # shellcheck source=lib/patches.sh
 source "$RAT_DIR/lib/patches.sh"
 # shellcheck source=lib/categories.sh
@@ -53,46 +50,6 @@ cmd_patch_status() {
   log "Current patch level: $(current_patch_level)"
 }
 
-cmd_nvidia() {
-  require_not_root
-
-  if ! cat_is_selected "updater" "nvidia-helper" "$CATEGORIES_DIR/updater.toml"; then
-    die "The Nvidia driver-switch helper was deselected during install (Updater category). Re-run the category picker (./install.sh 03-category-picker) to enable it."
-  fi
-
-  if ! detect_gpu_vendors | grep -qx nvidia; then
-    warn "No Nvidia GPU detected via lspci; continuing anyway since you asked."
-  fi
-
-  local current default answer chosen
-  current="$(current_nvidia_variant)"
-  default="${current:-open}"
-
-  if [[ -r /dev/tty ]]; then
-    printf 'Nvidia driver, [o]pen-source or [p]roprietary (current: %s) [%s]: ' \
-      "${current:-none}" "$default" > /dev/tty
-    read -r answer < /dev/tty || answer=""
-  else
-    die "rat nvidia needs a TTY to ask which driver to switch to. Set RAT_NVIDIA_DRIVER=open|proprietary and re-run non-interactively instead."
-  fi
-  answer="${answer:-$default}"
-
-  case "${answer,,}" in
-    p|proprietary) chosen="proprietary" ;;
-    o|open)        chosen="open" ;;
-    *) die "Unrecognized answer: $answer (expected o/open or p/proprietary)" ;;
-  esac
-
-  if [[ "$chosen" == "$current" ]]; then
-    ok "Already on $chosen; nothing to do."
-    return
-  fi
-
-  sudo_keepalive
-  install_nvidia_driver "$chosen"
-  warn "Reboot required for the new driver to take effect: sudo reboot"
-}
-
 usage() {
   cat <<EOF
 rat: control script for this rat-linux checkout ($RAT_DIR)
@@ -102,7 +59,6 @@ Usage: rat <command>
 Commands:
   update          git pull, upgrade the system (pacman/yay/flatpak),
                   then apply pending patches
-  nvidia          switch between open-source and proprietary Nvidia drivers
   patch-status    show which patch this machine is currently up to
   help            show this help
 EOF
@@ -110,7 +66,6 @@ EOF
 
 case "${1:-help}" in
   update)       cmd_update ;;
-  nvidia)       cmd_nvidia ;;
   patch-status) cmd_patch_status ;;
   help|-h|--help) usage ;;
   *)

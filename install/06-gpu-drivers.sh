@@ -2,10 +2,6 @@
 # Detects the GPU vendor(s) present (AMD / Intel / Nvidia, via lspci) and
 # installs the matching driver stack for each. Hybrid setups get both.
 #
-# Nvidia also needs a choice between its open-source and proprietary kernel
-# modules, prompted once and remembered in
-# ~/.local/state/rat-linux/nvidia-driver (set RAT_NVIDIA_DRIVER=open|proprietary
-# to skip the prompt). Use `rat nvidia` to change it later.
 
 # shellcheck source=../lib/nvidia.sh
 source "$RAT_DIR/lib/nvidia.sh"
@@ -29,9 +25,7 @@ for vendor in "${gpus[@]}"; do
       ;;
     nvidia)
       log "Nvidia GPU detected"
-      variant="$(current_nvidia_variant)"
-      [[ -n "$variant" ]] || variant="$(prompt_nvidia_variant)"
-      install_nvidia_driver "$variant"
+      install_nvidia_driver
       ;;
   esac
 done

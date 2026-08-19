@@ -1,0 +1,10 @@
+# Nvidia stack. Arch only ships the open kernel modules now: the proprietary
+# ones were dropped, and nvidia-open-dkms is what `nvidia-dkms` resolves to.
+# Pre-Turing cards need a legacy AUR package instead and are not handled here.
+# Installed by install/06-gpu-drivers.sh when an Nvidia GPU is detected.
+nvidia-open-dkms
+nvidia-utils
+lib32-nvidia-utils
+nvidia-settings
+egl-wayland
+opencl-nvidia

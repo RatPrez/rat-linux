@@ -8,18 +8,12 @@
 
 [[item]]
 id = "rat-cli"
-name = "rat CLI (rat update / rat nvidia / rat patch-status)"
+name = "rat CLI (rat update / rat patch-status)"
 source = "script"
 default = true
 
 [[item]]
 id = "flatpak-update"
 name = "Include `flatpak update` in `rat update`"
-source = "toggle"
-default = true
-
-[[item]]
-id = "nvidia-helper"
-name = "`rat nvidia` driver-switch helper"
 source = "toggle"
 default = true

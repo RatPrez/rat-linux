@@ -1,8 +1,0 @@
-# Nvidia's own open-source kernel modules. Works on Turing (RTX 20-series)
-# and newer, and is the default choice.
-nvidia-open-dkms    # `nvidia-dkms` no longer exists; this provides it
-nvidia-utils
-lib32-nvidia-utils
-nvidia-settings
-egl-wayland
-opencl-nvidia
