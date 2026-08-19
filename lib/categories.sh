@@ -167,11 +167,13 @@ install_category() {
 
   if [[ ${#pac_pkgs[@]} -gt 0 ]]; then
     log "$category: installing ${#pac_pkgs[@]} pacman package(s)"
-    printf '%s\n' "${pac_pkgs[@]}" | pac_install
+    # Redirect, not a pipe: the right-hand side of a pipeline runs in a
+    # subshell, so RAT_FAILED_PKGS updates would be discarded.
+    pac_install < <(printf '%s\n' "${pac_pkgs[@]}")
   fi
   if [[ ${#aur_pkgs[@]} -gt 0 ]]; then
     log "$category: installing ${#aur_pkgs[@]} AUR package(s)"
-    printf '%s\n' "${aur_pkgs[@]}" | aur_install
+    aur_install < <(printf '%s\n' "${aur_pkgs[@]}")
   fi
   if [[ ${#flatpak_pkgs[@]} -gt 0 ]]; then
     if command -v flatpak >/dev/null 2>&1; then
