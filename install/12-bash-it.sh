@@ -21,6 +21,9 @@ if [[ -d "$bash_it_dir/.git" ]]; then
   ok "bash-it already installed"
 else
   log "Cloning bash-it -> $bash_it_dir"
-  git clone --depth=1 https://github.com/Bash-it/bash-it.git "$bash_it_dir"
-  ok "bash-it cloned"
+  if git clone --depth=1 https://github.com/Bash-it/bash-it.git "$bash_it_dir"; then
+    ok "bash-it cloned"
+  else
+    warn "Failed to clone bash-it; the shell works, just without the theme."
+  fi
 fi
