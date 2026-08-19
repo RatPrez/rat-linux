@@ -25,6 +25,13 @@ default = false
 [[item]]
 id = "librewolf"
 name = "LibreWolf"
+source = "pacman"
+package = "librewolf"
+default = false
+
+[[item]]
+id = "edge"
+name = "Microsoft Edge"
 source = "aur"
-package = "librewolf-bin"
+package = "microsoft-edge-stable-bin"
 default = false
