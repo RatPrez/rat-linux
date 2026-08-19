@@ -1,10 +1,9 @@
-# AMD GPU stack: mesa RADV Vulkan driver + VA-API/VDPAU video acceleration.
+# AMD GPU stack: mesa RADV Vulkan driver + VA-API video acceleration.
 # Installed by install/06-gpu-drivers.sh when an AMD GPU is detected.
+#
+# libva-mesa-driver is not listed: mesa provides it directly. mesa-vdpau is
+# gone from the repos entirely, VA-API is the remaining path.
 mesa
 lib32-mesa
 vulkan-radeon
 lib32-vulkan-radeon
-libva-mesa-driver
-lib32-libva-mesa-driver
-mesa-vdpau
-lib32-mesa-vdpau
