@@ -1,10 +1,6 @@
 # AUR packages installed unconditionally via yay. One per line.
 # Anything user-optional lives in packages/categories/*.toml instead.
 
-# --- Dev / desktop ---
-xwaylandvideobridge   # lets XWayland apps (Discord etc.) see Wayland screenshares
 appimagelauncher      # integrates .AppImage files into the app menu
-
-# --- Apps ---
 imageviewer           # lightweight image viewer
-vesktop               # Discord client with Vencord built in
+vesktop               # Discord client with Vencord built in, native Wayland screenshare
